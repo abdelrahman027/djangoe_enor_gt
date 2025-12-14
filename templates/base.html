@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Enor | Shop{% endblock %}</title>
+
+  <!-- ✅ Tailwind CSS CDN (no extra spaces!) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#d32f2f',       // Tailwind-compatible red
+              'red-dark': '#b71c1c',
+              black: '#111',
+              white: '#fff',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- ✅ Google Fonts (no extra spaces!) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- ✅ Custom Animations (works with CDN) -->
+  <style>
+    /* Fade Up */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-up {
+      animation: fadeUp 0.6s ease-out forwards;
+    }
+
+    /* Float (gentle bob) */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-float {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* Bump (e.g., cart counter) */
+    @keyframes bump {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    .animate-bump {
+      animation: bump 0.3s ease;
+    }
+  </style>
+
+  <!-- ✅ Button Utilities -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .btn {
+        @apply px-6 py-3 font-semibold rounded-lg shadow-sm transition-all duration-300;
+      }
+      .btn-primary {
+        @apply bg-brand-red text-brand-white hover:bg-brand-red-dark hover:shadow-md focus:ring-2 focus:ring-brand-red focus:outline-none;
+      }
+      .btn-outline {
+        @apply bg-transparent border-2 border-brand-red text-brand-red hover:bg-brand-red hover:text-brand-white;
+      }
+    }
+  </style>
+</head>
+<body class="bg-brand-white b text-brand-black font-sans antialiased">
+
+      {% include 'shared/header.html' %}
+  <!-- ✅ Main Content -->
+  <main class="min-h-[calc(100vh-128px)]">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </main>
+  <!-- FOOTER -->
+  {% include 'shared/footer.html' %}
+
+  <!-- ✅ Mobile Menu + Add-to-Cart JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('mobile-menu-button');
+      const panel = document.getElementById('menu-panel');
+      const backdrop = document.getElementById('menu-backdrop');
+
+      // Toggle mobile menu
+      function toggleMenu() {
+        const isOpen = panel.classList.contains('translate-y-0');
+        if (isOpen) {
+          // Close
+          panel.classList.remove('translate-y-0');
+          panel.classList.add('-translate-y-[25rem]');
+          backdrop.classList.add('opacity-0', 'pointer-events-none');
+          backdrop.classList.remove('opacity-100');
+          // Reset icon
+          btn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          `;
+        } else {
+          // Open
+          panel.classList.remove('-translate-y-full');
+          panel.classList.add('translate-y-0');
+          backdrop.classList.remove('opacity-0', 'pointer-events-none');
+          backdrop.classList.add('opacity-100');
+          // Animate to ✕
+          btn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          `;
+        }
+      }
+
+      btn.addEventListener('click', toggleMenu);
+      backdrop.addEventListener('click', toggleMenu);
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && panel.classList.contains('translate-y-0')) {
+          toggleMenu();
+        }
+      });
+
+      // Optional: Add-to-cart animation (uncomment when needed)
+      /*
+      document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          // Bump cart counter
+          const counter = document.getElementById('cart-count');
+          if (counter) {
+            let count = parseInt(counter.textContent) || 0;
+            counter.textContent = count + 1;
+            counter.classList.remove('animate-bump');
+            void counter.offsetWidth; // Trigger reflow
+            counter.classList.add('animate-bump');
+          }
+        });
+      });
+      */
+    });
+      document.addEventListener('DOMContentLoaded', () => {
+    const header = document.getElementById('header');
+    if (!header) return;
+
+    const updateHeaderStyle = () => {
+      if (window.scrollY > 10) {
+        header.classList.add('bg-brand-white/70', 'text-brand-black', 'shadow-md',
+        'backdrop-blur-lg');
+        header.classList.remove('bg-brand-black', 'text-brand-white');
+      } else {
+        header.classList.add('bg-brand-black', 'text-brand-white');
+        header.classList.remove('bg-brand-white', 'text-brand-black', 'shadow-md','bg-brand-white/70');
+      }
+    };
+
+    // Run on load (in case page loads mid-scroll)
+    updateHeaderStyle();
+
+    // Listen for scroll
+    window.addEventListener('scroll', updateHeaderStyle);
+  });
+  </script>
+</body>
+</html>
