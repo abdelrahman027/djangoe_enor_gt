@@ -10,12 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
+
 from pathlib import Path
 import environ 
+import dj_database_url
 
 env = environ.Env()
 environ.Env.read_env()
-ENVIRONMENT=env('ENVIRONMENT')
+ENVIRONMENT=env('ENVIRONMENT', default='production')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,10 +41,10 @@ else:
     ALLOWED_HOSTS = ['*']
 
 INTERNAL_IPS = [
-    '127.0.0.1',
-    'localhost:8000'
+"*"
 ]
 # Application definition
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -181,12 +184,23 @@ SOCIALACCOUNT_PROVIDERS = {
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 26214400  # 25 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 15728640   # 15 MB
+
+# Database
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+POSTGRES_LOCALLY = True
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+
+if ENVIRONMENT == 'production' or POSTGRES_LOCALLY == True:
+    DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
 
 
 # Password validation

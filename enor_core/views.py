@@ -34,6 +34,16 @@ def home(request):
 def about_view(request):
     return render(request,"about.html")
 
+
+def privacy_view(request):
+    return render(request,"privacy.html")
+
+
+def terms_service(request):
+    return render(request,"terms_of_service.html")
+
+
+
 def hot_deals(request):
     # Only products on sale: before_price > base_price AND is_available
     sale_products = Product.objects.filter(

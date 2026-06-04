@@ -26,6 +26,8 @@ urlpatterns = [
     path("",home_views.home,name='home'),
     path("search/",home_views.search_view,name="search"),
     path("about/",home_views.about_view,name="about"),
+    path("privacy/",home_views.privacy_view,name="privacy"),
+    path("terms/",home_views.terms_service,name="terms"),
     path("hotdeals/",home_views.hot_deals,name="hotdeals"),
     path("users/",include('enor_profile.urls')),
     path("store/",include('enor_store.urls')),
