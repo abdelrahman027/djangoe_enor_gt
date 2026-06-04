@@ -1,0 +1,69 @@
+<!-- templates/admin/settings/social_form.html -->
+{% extends 'shared/adminbase.html' %}
+
+{% block title %}
+  {% if social %}Edit Social Link{% else %}Add Social Link{% endif %} | Settings | Enor Admin
+{% endblock %}
+{% block header %}
+  {% if social %}Edit Social Link{% else %}Add New Social Link{% endif %}
+{% endblock %}
+
+{% block content %}
+<form method="post" class="max-w-2xl">
+  {% csrf_token %}
+  <div class="bg-white rounded-lg shadow p-6 space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Platform Name *</label>
+      <input type="text" name="name" required
+             value="{{ social.name|default:'' }}"
+             class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red"
+             placeholder="e.g., Facebook, Instagram">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">URL *</label>
+      <input type="url" name="link" required
+             value="{{ social.link|default:'' }}"
+             class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red"
+             placeholder="https://...">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">
+        Icon Class (e.g., <code>fab fa-facebook</code>)
+        <a href="https://fontawesome.com/search?m=free" target="_blank" class="text-sm text-brand-red ml-1">🔍 Find Icons</a>
+      </label>
+      <input type="text" name="icon"
+             value="{{ social.icon|default:'' }}"
+             class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red"
+             placeholder="fab fa-instagram">
+      <p class="mt-1 text-xs text-gray-500">
+        Uses Font Awesome 5 Free. Example: <code>fab fa-twitter</code>
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Display Order</label>
+        <input type="number" name="order" value="{{ social.order|default:'0' }}"
+               class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red">
+      </div>
+      <div class="flex items-center">
+        <input type="checkbox" id="is_active" name="is_active"
+               {% if social and social.is_active or not social %}checked{% endif %}
+               class="h-4 w-4 text-brand-red focus:ring-brand-red">
+        <label for="is_active" class="ml-2 text-sm text-gray-700">Active</label>
+      </div>
+    </div>
+
+    <div class="pt-4 border-t flex justify-end gap-3">
+      <a href="{% url 'admin_social_list' %}"
+         class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">Cancel</a>
+      <button type="submit"
+              class="px-4 py-2 bg-brand-red text-white rounded hover:bg-brand-red-dark">
+        {% if social %}Update Link{% else %}Add Link{% endif %}
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,109 @@
+<!-- templates/admin/categories/category_list.html -->
+{% extends 'shared/adminbase.html' %}
+
+{% block title %}Categories | Enor Admin{% endblock %}
+{% block header %}Categories{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  <h2 class="text-xl font-bold">All Categories</h2>
+  <a href="{% url 'admin_category_create' %}"
+     class="px-4 py-2 bg-brand-red text-white rounded-lg hover:bg-brand-red-dark flex items-center gap-1">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+    </svg>
+    Add Category
+  </a>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-lg shadow p-4 mb-6">
+  <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <label class="block text-sm text-gray-600 mb-1">Search</label>
+      <input type="text" name="q" value="{{ query }}"
+             class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red"
+             placeholder="Category name">
+    </div>
+    <div>
+      <label class="block text-sm text-gray-600 mb-1">Status</label>
+      <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red">
+        <option value="">All Statuses</option>
+        <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+        <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+      </select>
+    </div>
+    <div class="flex items-end">
+      <button type="submit" class="px-4 py-2 bg-brand-red text-white rounded w-full">Apply</button>
+    </div>
+  </form>
+</div>
+
+<!-- Categories Grid -->
+{% if categories %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for category in categories %}
+      <div class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow">
+        <div class="p-4">
+          <div class="flex items-start gap-3">
+            {% if category.cat_image %}
+              <img src="{{ category.cat_image.url }}" 
+                   alt="{{ category.category_name }}"
+                   class="w-12 h-12 object-cover rounded">
+            {% else %}
+              <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                <span class="text-gray-500 text-sm">?</span>
+              </div>
+            {% endif %}
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <h3 class="font-semibold text-gray-900 truncate">{{ category.category_name }}</h3>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                              {% if category.is_active %}bg-green-100 text-green-800
+                              {% else %}bg-red-100 text-red-800{% endif %}">
+                  {{ category.is_active|yesno:"Active,Inactive" }}
+                </span>
+              </div>
+              <p class="text-sm text-gray-500 mt-1 truncate">
+                {{ category.description|truncatewords:6 }}
+              </p>
+              <div class="mt-2 flex items-center justify-between text-sm">
+                <span>{{ category.product_count }} product{{ category.product_count|pluralize }}</span>
+                <span class="text-gray-400">{{ category.created_at|date:"M j, Y" }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-4 pt-3 border-t flex gap-2">
+            <a href="{% url 'admin_category_edit' category.id %}"
+               class="text-sm text-blue-600 hover:text-blue-900">Edit</a>
+            <a href="{% url 'admin_category_detail' category.id %}"
+               class="text-sm text-gray-600 hover:text-gray-900">View</a>
+            {% if request.user.profile.role == 'Admin' %}
+              <a href="{% url 'admin_category_delete' category.id %}"
+                 class="text-sm text-red-600 hover:text-red-900">Delete</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="text-center py-12 bg-white rounded-xl shadow-sm">
+    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+    <h3 class="mt-2 text-sm font-medium text-gray-900">No categories</h3>
+    <p class="mt-1 text-sm text-gray-500">Get started by creating a new category.</p>
+    <div class="mt-6">
+      <a href="{% url 'admin_category_create' %}"
+         class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-red hover:bg-brand-red-dark">
+        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Add Category
+      </a>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

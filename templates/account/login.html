@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load socialaccount %}
+{% block title %}Login — Enor.{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-12">
+  <div class="bg-white rounded-xl shadow-lg p-8">
+    <h2 class="text-2xl font-bold text-center mb-6">Welcome Back</h2>
+
+    <!-- Social Login -->
+    <div class="space-y-4 mb-8">
+      <a href='{% provider_login_url "google" %}'
+         class="flex items-center justify-center gap-3 w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-lg transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24">
+          <path fill="#fff" d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/>
+        </svg>
+        Continue with Google
+      </a>
+{% comment %} 
+      <a href="{% url 'socialaccount_login' provider='apple' %}"
+         class="flex items-center justify-center gap-3 w-full bg-black hover:bg-gray-800 text-white font-medium py-3 rounded-lg transition">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.1.12 3.22.7 4.44 2.51-.14.08-2.8 1.54-2.7 4.19.07 1.82 1.73 2.82 2.92 2.79 1.2-.04 2.2-1.18 2.23-1.21l.57.42zM15 3.2c.73-.85 1.8-2.18.58-3.2-.77-.65-1.86-.3-2.54.36-1.2 1.17-1.17 3.23.9 3.23 1.24 0 2.23-.99 2.23-2.36 0-.4-.05-.66-.07-.73z"/>
+        </svg>
+        Continue with Apple
+      </a> {% endcomment %}
+    </div>
+
+    <div class="flex items-center my-6">
+      <div class="flex-grow border-t border-gray-300"></div>
+      <span class="px-3 text-gray-500 text-sm">or</span>
+      <div class="flex-grow border-t border-gray-300"></div>
+    </div>
+
+    <!-- Email/Password Login -->
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label for="{{ form.login.id_for_label }}" class="block text-sm font-medium text-gray-700">Email</label>
+        {{ form.login|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:outline-none" }}
+        {% if form.login.errors %}<p class="text-red-500 text-sm mt-1">{{ form.login.errors }}</p>{% endif %}
+      </div>
+      <div>
+        <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700">Password</label>
+        {{ form.password|add_class:"w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:outline-none" }}
+        {% if form.password.errors %}<p class="text-red-500 text-sm mt-1">{{ form.password.errors }}</p>{% endif %}
+      </div>
+
+<a href="{% url 'account_reset_password' %}" class="text-xs text-brand-red hover:underline">Forget password ?</a>
+
+      <button type="submit" class="btn btn-primary w-full">Login</button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-gray-600">
+      Don’t have an account? <a href="{% url 'account_signup' %}" class="text-brand-red hover:underline">Sign up</a>
+    </p>
+  </div>
+</div>
+
+<!-- Utility to add CSS classes to form fields -->
+{% comment %} Install django-widget-tweaks or use custom filter {% endcomment %}
+<!-- Add to templatetags/form_utils.py if needed -->
+<style>
+  input[type="text"], input[type="email"], input[type="password"] {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:outline-none;
+  }
+</style>
+{% endblock %}

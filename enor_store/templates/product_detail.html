@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Enor{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+  <!-- Breadcrumb -->
+  <nav class="text-sm text-gray-500 mb-4">
+    <a href="{% url 'product_list' %}" class="hover:text-brand-red">Shop</a>
+    {% if product.category %}
+      <span> / </span>
+      <a href="{% url 'product_list' %}?category={{ product.category.slug }}" class="hover:text-brand-red">
+        {{ product.category.category_name }}
+      </a>
+    {% endif %}
+    <span> / </span>
+    <span class="text-gray-800">{{ product.name }}</span>
+  </nav>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Image Gallery -->
+    <div>
+      {%if product.image %}
+      {% with main_image=product.image %}
+        {% if main_image %}
+          <div class="aspect-square bg-gray-50 rounded-xl overflow-hidden mb-4">
+            <img id="main-image" 
+                 src="{{ main_image.url }}" 
+                 alt="{{ product.name }}"
+                 class="w-full h-full object-cover">
+          </div>
+        {% else %}
+          <div class="aspect-square bg-gray-100 flex items-center justify-center text-gray-400">
+            <span>No Image</span>
+          </div>
+        {% endif %}
+      {% endwith %}
+      {%endif%}
+
+      <!-- Thumbnails (first image per color) -->
+      {% if product.images.exists %}
+        <div class="flex flex-wrap gap-2">
+          {% for image in product.images.all|slice:":4" %}
+            <button type="button"
+                    class="w-12 h-12 rounded border-2 border-gray-200 hover:border-brand-red overflow-hidden"
+                    _="on click set #main-image's src to '{{ image.image.url }}'">
+              <img src="{{ image.image.url }}" alt="Preview" class="w-full h-full object-cover">
+            </button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Product Info -->
+    <div>
+      <h1 class="text-3xl font-bold text-brand-black">{{ product.name }}</h1>
+      
+      <div class="mt-2 flex items-center gap-3">
+        {% if product.before_price and product.before_price > product.base_price %}
+          <span class="text-2xl font-bold text-brand-red">${{ product.base_price }}</span>
+          <span class="text-gray-500 line-through text-lg">${{ product.before_price }}</span>
+        {% else %}
+          <span class="text-2xl font-bold text-brand-black">${{ product.base_price }}</span>
+        {% endif %}
+      </div>
+
+      {% if product.is_featured %}
+        <span class="inline-block mt-2 px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
+          Featured
+        </span>
+      {% endif %}
+
+      <p class="mt-4 text-gray-700">{{ product.description|linebreaks }}</p>
+
+      <!-- Variant Selector -->
+      <div class="mt-6">
+        {% if items %}
+          {% if items|length >= 1 %}
+            <div class="mb-4">
+              <label class="block font-medium text-gray-800 mb-2">Choose Options</label>
+              <div id="variant-selector" class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {% for item in items %}
+                  <a href="{% if item.is_in_stock %}?item={{item.sku}}{% else %}?out{%  endif %}" type="button"
+                          class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 text-left transition-colors
+                                 {% if not item.is_in_stock %}opacity-50 cursor-not-allowed{% endif %} {% if item.sku|stringformat:'s' == request.GET.item %}border-brand-red{% else %}border-gray-200{% endif %}"
+                          {% if not item.is_in_stock %}disabled{% endif %}>
+                    <span class="truncate">
+                      {% if item.color %}<div class="w-4 h-4 rounded-full" style="background:{{item.color.hex_code}};" ></div>{{ item.color.name }}{% endif %}
+                      {% if item.size %} • {{ item.size.name }}{% endif %}
+                      {% if item.style %} • {{ item.style.name }}{% endif %}
+                    </span>
+                    <span class="font-medium whitespace-nowrap">
+                      ${{ item.price }} 
+                      {% if not item.is_in_stock %}— Out of Stock{% endif %}
+                    </span>
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+
+
+          {% else %}
+            {% with item=items.0 %}
+              <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+                <p class="font-medium">
+                  {% if item.color %}Color: {{ item.color.name }}, {% endif %}
+                  {% if item.size %}Size: {{ item.size.name }}, {% endif %}
+                  {% if item.style %}Style: {{ item.style.name }}{% endif %}
+                </p>
+                <p class="mt-1">
+                  <span class="font-bold">${{ item.price }}</span>
+                  {% if item.is_in_stock %}
+                    <span class="ml-3 text-green-600">✓ In stock ({{ item.stock_quantity }})</span>
+                  {% else %}
+                    <span class="ml-3 text-red-600">✗ Out of stock</span>
+                  {% endif %}
+                </p>
+              </div>
+
+
+            {% endwith %}
+          {% endif %}
+
+
+        {% else %}
+          <p class="text-red-600 italic">No active variants available.</p>
+        {% endif %}
+      </div>
+      <form method="post" action="{% url 'add_cart_item' %}">
+        {% csrf_token %}
+             {% if request.GET.item %}
+                  <button type="submit" class="btn btn-primary w-full mt-4" id="add-to-cart-btn">
+                    Add to Cart
+                  </button>
+              {% else %}
+                <button class="btn w-full bg-gray-300 text-gray-600 cursor-not-allowed" disabled>
+                  Please select a product
+                </button>
+              {% endif %}
+              <input type="hidden" name="product_item_sku" value="{{ request.GET.item }}">
+            </form>
+      <!-- Reviews -->
+      <div class="mt-10 pt-6 border-t">
+        <h3 class="text-xl font-semibold">Reviews ({{ reviews_count }})</h3>
+        {% if reviews %}
+          <div class="space-y-4 mt-4">
+            {% for review in reviews|slice:":3" %}
+              <div class="text-sm">
+                <div class="flex items-center gap-2">
+                  <strong>{{ review.user.username|truncatechars:15 }}</strong>
+                  <span class="text-yellow-500">★{{ review.rating }}/5</span>
+                </div>
+                <p class="mt-1 text-gray-700">{{ review.comment|truncatewords:20 }}</p>
+              </div>
+            {% endfor %}
+            {% if reviews_count > 3 %}
+              <a href="#" class="text-brand-red text-sm hover:underline">View all reviews</a>
+            {% endif %}
+          </div>
+        {% else %}
+          <p class="text-gray-500 mt-2">No reviews yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Optional: Listen for global cart updates -->
+
+{% endblock %}

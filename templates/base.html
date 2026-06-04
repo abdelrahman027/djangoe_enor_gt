@@ -1,5 +1,8 @@
+{% load static %}
+{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,6 +10,7 @@
 
   <!-- ✅ Tailwind CSS CDN (no extra spaces!) -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
   <script>
     tailwind.config = {
       theme: {
@@ -33,27 +37,51 @@
   <style>
     /* Fade Up */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .animate-fade-up {
       animation: fadeUp 0.6s ease-out forwards;
     }
 
     /* Float (gentle bob) */
     @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
     }
+
     .animate-float {
       animation: float 3s ease-in-out infinite;
     }
 
     /* Bump (e.g., cart counter) */
     @keyframes bump {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.15); }
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.15);
+      }
     }
+
     .animate-bump {
       animation: bump 0.3s ease;
     }
@@ -72,11 +100,30 @@
         @apply bg-transparent border-2 border-brand-red text-brand-red hover:bg-brand-red hover:text-brand-white;
       }
     }
+    
   </style>
-</head>
-<body class="bg-brand-white b text-brand-black font-sans antialiased">
+  {% block style %}
 
-      {% include 'shared/header.html' %}
+  {% endblock style %}
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script>
+    // Auto-attach CSRF token to all htmx requests
+    document.addEventListener('htmx:configRequest', (e) => {
+      const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+      if (token) {
+        e.detail.headers['X-CSRFToken'] = token;
+      }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <script src="https://unpkg.com/hyperscript.org@0.9.13"></script>
+</head>
+
+<body class="bg-brand-white b text-brand-black font-sans antialiased relative">
+  <!-- HEADER -->
+  {% include "shared/messages.html" %}
+  {% include 'shared/header.html' %}
   <!-- ✅ Main Content -->
   <main class="min-h-[calc(100vh-128px)]">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -151,27 +198,120 @@
       });
       */
     });
-      document.addEventListener('DOMContentLoaded', () => {
-    const header = document.getElementById('header');
-    if (!header) return;
+    document.addEventListener('DOMContentLoaded', () => {
+      const header = document.getElementById('header');
+      if (!header) return;
 
-    const updateHeaderStyle = () => {
-      if (window.scrollY > 10) {
-        header.classList.add('bg-brand-white/70', 'text-brand-black', 'shadow-md',
-        'backdrop-blur-lg');
-        header.classList.remove('bg-brand-black', 'text-brand-white');
-      } else {
-        header.classList.add('bg-brand-black', 'text-brand-white');
-        header.classList.remove('bg-brand-white', 'text-brand-black', 'shadow-md','bg-brand-white/70');
+      const updateHeaderStyle = () => {
+        if (window.scrollY > 10) {
+          header.classList.add('bg-brand-white/70', 'text-brand-black', 'shadow-md',
+            'backdrop-blur-lg');
+          header.classList.remove('bg-brand-black', 'text-brand-white');
+        } else {
+          header.classList.add('bg-brand-black', 'text-brand-white');
+          header.classList.remove('bg-brand-white', 'text-brand-black', 'shadow-md', 'bg-brand-white/70');
+        }
+      };
+
+      // Run on load (in case page loads mid-scroll)
+      updateHeaderStyle();
+
+      // Listen for scroll
+      window.addEventListener('scroll', updateHeaderStyle);
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize cart count
+      const updateCartCount = async () => {
+        if (!document.getElementById('cart-count')) return;
+        const response = await fetch('/cart/', { method: 'HEAD' });
+        const count = response.headers.get('X-Cart-Count') || 0;
+        document.getElementById('cart-count').textContent = count;
+      };
+
+      // Better: Add header in cart_detail view:
+      // In cart/views.py: cart_detail → response['X-Cart-Count'] = cart_items.count()
+      // Then you can use above.
+
+      // OR simpler: just set it in cart_detail context & render in base (if user logged in)
+      // We’ll do the latter below ↓
+    });
+
+    // Search Modal
+    const searchModal = document.getElementById('search-modal');
+    const searchInput = document.getElementById('search-input');
+    const closeSearch = document.getElementById('close-search');
+    const searchButton = document.getElementById('search-button');
+    const search_results = document.getElementById('search-results');
+    const static_products = '{{static_products_json}}'
+    const rdata = JSON.parse(static_products.replace(/&quot;/g, '"'))
+    console.log(rdata);
+
+
+    // Open search modal
+    function openSearchModal() {
+      searchModal.classList.remove('hidden');
+      searchInput.focus();
+    }
+
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        search();
       }
-    };
+      if (e.key === 'Escape' && !searchModal.classList.contains('hidden')) {
+        closeSearchModal();
+      }
+      search_results.innerHTML = '';
+      rdata.forEach(product => {
+        if (product.name.toLowerCase().includes(searchInput.value.toLowerCase())) {
+          search_results.innerHTML += `
+        <ul class="flex flex-col gap-1 max-h-64 overflow-y-auto">
 
-    // Run on load (in case page loads mid-scroll)
-    updateHeaderStyle();
+          <li class="hover:text-brand-red hover:bg-gray-100 flex items-center gap-1 border-t p-1 border-gray-200">
+            <a href="http://localhost:8000/store/${product.slug}/" class="flex items-center gap-2">
+              <img src="/media/${product.image}" alt="${product.name}" class="h-8 w-8 rounded-full">
+              <span class="font-medium">${product.name}</span>
+            </a>
+          </li>
+        </ul>
 
-    // Listen for scroll
-    window.addEventListener('scroll', updateHeaderStyle);
-  });
+          `;
+        }
+      });
+      if (search_results.innerHTML === '') {
+        search_results.innerHTML = 'Product not Found!';
+      }
+    });
+
+    function closeSearchModal() {
+      searchModal.classList.add('hidden');
+    }
+
+
+
+    searchButton.addEventListener('click', openSearchModal);
+    closeSearch.addEventListener('click', closeSearchModal);
+
+    // Close search modal when clicking outside
+    searchModal.addEventListener('click', (e) => {
+      if (e.target === searchModal) {
+        closeSearchModal();
+      }
+    });
+
+    // Close search modal with Escape key
+
+
+
+    function searchProduct() {
+      const searchTerm = searchInput.value.trim();
+      if (searchTerm.length > 0) {
+        closeSearchModal();
+        window.location.href = `{% url 'product_list' %}?q=${encodeURIComponent(searchTerm)}`;
+      }
+    }
   </script>
+  {% block extra_js %}
+  {% endblock extra_js %}
 </body>
+
 </html>

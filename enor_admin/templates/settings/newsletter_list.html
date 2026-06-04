@@ -1,0 +1,68 @@
+<!-- templates/admin/settings/newsletter_list.html -->
+{% extends 'shared/adminbase.html' %}
+
+{% block title %}Newsletter | Settings | Enor Admin{% endblock %}
+{% block header %}Newsletter Subscribers{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  <div>
+    <h2 class="text-xl font-bold">Newsletter Subscribers</h2>
+    <p class="text-gray-500 mt-1">{{ total }} subscriber{{ total|pluralize }}</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="?export=csv"
+       class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 flex items-center gap-1">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+      Export CSV
+    </a>
+  </div>
+</div>
+
+<!-- Search -->
+<div class="bg-white rounded-lg shadow p-4 mb-6">
+  <form method="get" class="flex gap-2">
+    <input type="text" name="q" value="{{ query }}"
+           placeholder="Search email..."
+           class="flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red">
+    <button type="submit" class="px-4 py-2 bg-brand-red text-white rounded hover:bg-brand-red-dark">Search</button>
+    <a href="{% url 'admin_newsletter_list' %}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Reset</a>
+  </form>
+</div>
+
+<!-- Subscribers -->
+<div class="bg-white rounded-lg shadow overflow-hidden">
+  {% if newsletters %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Subscribed</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for n in newsletters %}
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-3 font-medium">{{ n.email }}</td>
+              <td class="px-4 py-3 text-right text-sm text-gray-500">
+                {{ n.subscribed_at|date:"M j, Y" }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="text-center py-12">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No subscribers</h3>
+      <p class="mt-1 text-sm text-gray-500">People who subscribe to your newsletter will appear here.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

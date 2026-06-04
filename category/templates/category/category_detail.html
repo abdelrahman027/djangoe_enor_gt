@@ -1,0 +1,94 @@
+<!-- templates/admin/categories/category_detail.html -->
+{% extends 'shared/adminbase.html' %}
+
+{% block title %}{{ category.category_name }} | Category Detail | Enor Admin{% endblock %}
+{% block header %}Category Detail{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="bg-white rounded-lg shadow p-4 md:p-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between">
+      <div>
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-bold text-gray-900">{{ category.category_name }}</h1>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        {% if category.is_active %}bg-green-100 text-green-800
+                        {% else %}bg-red-100 text-red-800{% endif %}">
+            {{ category.is_active|yesno:"Active,Inactive" }}
+          </span>
+        </div>
+        <p class="text-sm text-gray-500 mt-1">{{ category.description|default:"No description" }}</p>
+      </div>
+      <div class="mt-3 md:mt-0 flex gap-2">
+        <a href="{% url 'admin_category_edit' category.id %}"
+           class="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">Edit</a>
+        {% if request.user.profile.role == 'Admin' %}
+          <a href="{% url 'admin_category_delete' category.id %}"
+             class="px-3 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200">Delete</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white rounded-lg shadow p-4">
+      <div class="text-sm text-gray-500">Total Products</div>
+      <div class="text-2xl font-bold">{{ product_count }}</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+      <div class="text-sm text-gray-500">Active Products</div>
+      <div class="text-2xl font-bold">{{ active_products.count }}</div>
+    </div>
+    <div class="bg-white rounded-lg shadow p-4">
+      <div class="text-sm text-gray-500">Created</div>
+      <div class="text-2xl font-bold">{{ category.created_at|date:"M j, Y" }}</div>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-4 py-3 border-b font-medium">
+      Products in "{{ category.category_name }}" ({{ product_count }})
+    </div>
+    {% if products %}
+      <div class="divide-y">
+        {% for product in products|slice:":10" %}
+          <div class="p-4 hover:bg-gray-50">
+            <div class="flex gap-3">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" class="w-12 h-12 object-cover rounded">
+              {% else %}
+                <div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
+                  <span class="text-gray-500 text-xs">?</span>
+                </div>
+              {% endif %}
+              <div>
+                <h3 class="font-medium">{{ product.name }}</h3>
+                <div class="mt-1 flex items-center gap-2">
+                  <span class="text-sm ${% if product.is_available %}text-green-600{% else %}text-gray-400{% endif %}">
+                    {{ product.is_available|yesno:"Available,Unavailable" }}
+                  </span>
+                  <span class="text-sm text-gray-500">${{ product.base_price }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {% if product_count > 10 %}
+        <div class="p-3 text-center border-t">
+          <a href="{% url 'admin_product_list' %}?category={{ category.id }}" class="text-sm text-brand-red hover:underline">
+            View all {{ product_count }} products →
+          </a>
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="p-8 text-center text-gray-500">
+        No products in this category.
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

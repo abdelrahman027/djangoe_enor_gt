@@ -1,0 +1,58 @@
+<!-- templates/admin/categories/category_form.html -->
+{% extends 'shared/adminbase.html' %}
+
+{% block title %}
+  {% if category %}Edit {{ category.category_name }}{% else %}Add Category{% endif %} | Enor Admin
+{% endblock %}
+{% block header %}
+  {% if category %}Edit Category{% else %}Add New Category{% endif %}
+{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="max-w-2xl">
+  {% csrf_token %}
+
+  <div class="bg-white rounded-lg shadow p-6 space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Category Name *</label>
+      <input type="text" name="category_name" required
+             value="{{ category.category_name|default:'' }}"
+             class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red">
+      <p class="mt-1 text-sm text-gray-500">Unique name (e.g., "T-Shirts", "Accessories")</p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+      <textarea name="description" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red">{{ category.description|default:'' }}</textarea>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Category Image</label>
+      <input type="file" name="cat_image" accept="image/*"
+             class="w-full px-3 py-2 border border-gray-300 rounded">
+      {% if category and category.cat_image %}
+        <div class="mt-2 flex items-center">
+          <img src="{{ category.cat_image.url }}" class="w-16 h-16 object-cover rounded mr-2">
+          <span class="text-sm text-gray-500">Current image</span>
+        </div>
+      {% endif %}
+      <p class="mt-1 text-sm text-gray-500">Recommended: 400×400 px</p>
+    </div>
+
+    <div class="flex items-center">
+      <input type="checkbox" id="is_active" name="is_active" {% if category and category.is_active or not category %}checked{% endif %} class="h-4 w-4 text-brand-red focus:ring-brand-red">
+      <label for="is_active" class="ml-2 text-sm text-gray-700">Active (visible in storefront)</label>
+    </div>
+
+    <div class="pt-4 border-t flex justify-end gap-3">
+      <a href="{% url 'admin_category_list' %}"
+         class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">Cancel</a>
+      <button type="submit"
+              class="px-4 py-2 bg-brand-red text-white rounded hover:bg-brand-red-dark">
+        {% if category %}Update Category{% else %}Create Category{% endif %}
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %}

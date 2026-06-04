@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load widget_tweaks static %}
+
+{% block title %}Edit Profile — BOOST{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-8">
+  <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="bg-brand-black px-6 py-4">
+      <h1 class="text-2xl font-bold text-white">Edit Profile</h1>
+    </div>
+
+    <div class="p-6">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="mb-4 p-3 rounded-lg {% if 'success' in message.tags or 'info' in message.tags %}bg-green-100 text-green-700{% elif 'error' in message.tags or 'warning' in message.tags %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        
+        <!-- Personal Info -->
+        <section>
+          <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">Personal Info</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Full Name <span class="text-gray-400">(optional)</span>
+              </label>
+              {% render_field form.real_name class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red" %}
+              {% if form.real_name.errors %}<p class="mt-1 text-sm text-red-600">{{ form.real_name.errors|join:", " }}</p>{% endif %}
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Profile Photo
+              </label>
+              <div class="flex items-center gap-4">
+                <div class="relative">
+                  <img id="preview-avatar" src="{{ request.user.profile.avatar }}"
+                       alt="Preview"
+                       class="w-16 h-16 rounded-full object-cover ring-2 ring-gray-200">
+                  <label for="id_image" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer opacity-0 hover:opacity-100 transition">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                  </label>
+                </div>
+                <div>
+                  {% render_field form.image class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-brand-red file:text-white hover:file:bg-brand-red-dark" %}
+                  <p class="text-xs text-gray-500 mt-1">JPG, PNG up to 2MB</p>
+                  {% if form.image.errors %}<p class="text-red-600 text-xs mt-1">{{ form.image.errors|join:", " }}</p>{% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Main Phone</label>
+              {% render_field form.main_phone class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red" placeholder="e.g. +2010XXXXXXXX" %}
+              {% if form.main_phone.errors %}<p class="mt-1 text-sm text-red-600">{{ form.main_phone.errors|join:", " }}</p>{% endif %}
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Secondary Phone</label>
+              {% render_field form.secondary_phone class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red" placeholder="e.g. +2010XXXXXXXX" %}
+              {% if form.secondary_phone.errors %}<p class="mt-1 text-sm text-red-600">{{ form.secondary_phone.errors|join:", " }}</p>{% endif %}
+            </div>
+          </div>
+        </section>
+
+
+
+        <div class="flex flex-wrap gap-4 pt-4">
+          <button type="submit" class="btn btn-primary px-6 py-2.5">
+            Save Changes
+          </button>
+          <a href="{% url 'profile' %}" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Avatar preview
+  document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('id_image');
+    const previewAvatar = document.getElementById('preview-avatar');
+    
+    if (imageInput && previewAvatar) {
+      imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          if (file.size > 2 * 1024 * 1024) { // 2MB
+            alert('File size exceeds 2MB limit.');
+            this.value = '';
+            return;
+          }
+          
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            previewAvatar.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
+    // Ensure formset management fields are properly updated
+    const totalForms = document.querySelector('#id_form-TOTAL_FORMS');
+    if (totalForms) {
+      // Initial count
+      let formCount = parseInt(totalForms.value);
+      
+      // Add click listener for the add button
+      document.querySelector('[type="button"]').addEventListener('click', function() {
+        formCount++;
+        totalForms.value = formCount;
+      });
+    }
+  });
+</script>
+{% endblock %}

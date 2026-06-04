@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Edit Address — ENOR.{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto mt-8">
+  <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="bg-brand-black px-6 py-4">
+      <h1 class="text-2xl font-bold text-white">Edit New Address</h1>
+    </div>
+
+    <div class="p-6">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="mb-4 p-3 rounded-lg {% if 'success' in message.tags or 'info' in message.tags %}bg-green-100 text-green-700{% elif 'error' in message.tags or 'warning' in message.tags %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Address Line 1 -->
+          <div class="md:col-span-2">
+            <label for="{{ form.address_line1.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Address Line 1 <span class="text-red-500">*</span>
+            </label>
+            {% render_field form.address_line1 %}
+            {% if form.address_line1.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.address_line1.errors|join:", " }}</p>
+            {% endif %}
+            <p class="mt-1 text-xs text-gray-500">Street address, P.O. box, company name, c/o</p>
+          </div>
+          
+          <!-- Building Number -->
+          <div>
+            <label for="{{ form.building_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Building Number
+            </label>
+            {% render_field form.building_number %}
+            {% if form.building_number.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.building_number.errors|join:", " }}</p>
+            {% endif %}
+            <p class="mt-1 text-xs text-gray-500">Optional</p>
+          </div>
+          
+          <!-- Floor -->
+          <div>
+            <label for="{{ form.floor.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Floor
+            </label>
+            {% render_field form.floor %}
+            {% if form.floor.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.floor.errors|join:", " }}</p>
+            {% endif %}
+            <p class="mt-1 text-xs text-gray-500">Optional</p>
+          </div>
+          
+          <!-- Apartment Number -->
+          <div>
+            <label for="{{ form.apartment_number.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Apartment/Suite
+            </label>
+            {% render_field form.apartment_number %}
+            {% if form.apartment_number.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.apartment_number.errors|join:", " }}</p>
+            {% endif %}
+            <p class="mt-1 text-xs text-gray-500">Optional</p>
+          </div>
+          
+          <!-- City -->
+          <div>
+            <label for="{{ form.city.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              City <span class="text-red-500">*</span>
+            </label>
+            {% render_field form.city %}
+            {% if form.city.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.city.errors|join:", " }}</p>
+            {% endif %}
+          </div>
+          
+          <!-- Address Notes -->
+          <div class="md:col-span-2">
+            <label for="{{ form.address_notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">
+              Delivery Instructions
+            </label>
+            {% render_field form.address_notes %}
+            {% if form.address_notes.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ form.address_notes.errors|join:", " }}</p>
+            {% endif %}
+            <p class="mt-1 text-xs text-gray-500">Gate codes, door buzzer, special directions, etc.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 pt-6">
+          <button type="submit" class="btn btn-primary px-6 py-2.5">
+            Update Address
+          </button>
+          <a href="{% url 'profile' %}" class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

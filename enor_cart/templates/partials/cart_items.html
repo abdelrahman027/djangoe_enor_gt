@@ -1,0 +1,46 @@
+{% if items %}
+<div class="space-y-4">
+  {% for item in items %}
+    <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm">
+      <div>
+        <h3 class="font-semibold">{{ item.product_item.product.name }}</h3>
+        <p class="text-sm text-gray-500">
+          {% if item.product_item.color %}{{ item.product_item.color.name }}{% endif %}
+          {% if item.product_item.size %} • {{ item.product_item.size.name }}{% endif %}
+          {% if item.product_item.style %} • {{ item.product_item.style.name }}{% endif %}
+        </p>
+        <p class="font-medium text-brand-red">${{ item.product_item.price }}</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <form hx-post="{% url 'cart_update' item.id %}"
+              hx-target="#cart-items"
+              hx-swap="outerHTML">
+          {% csrf_token %}
+          <input type="number"
+                 name="quantity"
+                 min="0"
+                 value="{{ item.quantity }}"
+                 class="w-16 border rounded px-2 py-1 text-center">
+        </form>
+
+        <button hx-post="{% url 'cart_remove' item.id %}"
+                hx-target="#cart-items"
+                hx-swap="outerHTML"
+                class="text-sm text-red-600">
+          Remove
+        </button>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="mt-8 flex justify-between items-center border-t pt-6">
+  <p class="text-xl font-semibold">
+    Total: <span class="text-brand-red">${{ total }}</span>
+  </p>
+  <a href="#" class="btn btn-primary">Checkout</a>
+</div>
+{% else %}
+<p class="text-gray-500">Your cart is empty.</p>
+{% endif %}

@@ -1,0 +1,168 @@
+<!-- templates/admin/users/user_detail.html -->
+{% extends 'shared/adminbase.html' %}
+{% load static %}
+
+{% block title %}{{ user.profile.name }} | User Detail | Enor Admin{% endblock %}
+{% block header %}User Detail{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="bg-white rounded-lg shadow p-4 md:p-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between">
+      <div class="flex items-center gap-4">
+        {% if user.profile.image %}
+          <img src="{{ user.profile.image.url }}" class="w-16 h-16 rounded-full">
+        {% else %}
+          <div class="w-16 h-16 rounded-full bg-brand-red flex items-center justify-center text-white text-xl font-medium">
+            {{ user.username|first|upper }}
+          </div>
+        {% endif %}
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-bold text-gray-900">{{ user.profile.name }}</h1>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                          {% if user.profile.status == 'Active' %}bg-green-100 text-green-800
+                          {% elif user.profile.status == 'Inactive' %}bg-yellow-100 text-yellow-800
+                          {% elif user.profile.status == 'Banned' %}bg-red-100 text-red-800{% endif %}">
+              {{ user.profile.status }}
+            </span>
+          </div>
+          <div class="text-sm text-gray-500 mt-1">
+            @{{ user.username }} • Joined {{ user.date_joined|date:"M j, Y" }}
+          </div>
+        </div>
+      </div>
+      <div class="mt-3 md:mt-0 flex gap-2">
+        <a href="{% url 'admin_user_edit' user.id %}"
+           class="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">Edit User</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Profile -->
+    <div class="lg:col-span-1">
+      <div class="bg-white rounded-lg shadow">
+        <div class="px-4 py-3 border-b font-medium">Profile</div>
+        <div class="p-4 space-y-3 text-sm">
+          <div>
+            <span class="text-gray-500">Full Name:</span>
+            <span class="font-medium ml-1">{{ user.profile.real_name|default:"—" }}</span>
+          </div>
+          <div>
+            <span class="text-gray-500">Email:</span>
+            <span class="font-medium ml-1">{{ user.email }}</span>
+          </div>
+          <div>
+            <span class="text-gray-500">Profile Email:</span>
+            <span class="font-medium ml-1">{{ user.profile.email|default:"—" }}</span>
+          </div>
+          <div>
+            <span class="text-gray-500">Main Phone:</span>
+            <span class="font-medium ml-1">{{ user.profile.main_phone|default:"—" }}</span>
+          </div>
+          <div>
+            <span class="text-gray-500">Secondary Phone:</span>
+            <span class="font-medium ml-1">{{ user.profile.secondary_phone|default:"—" }}</span>
+          </div>
+          <div>
+            <span class="text-gray-500">Role:</span>
+            <span class="font-medium ml-1
+                         {% if user.profile.role == 'Admin' %}text-purple-600
+                         {% elif user.profile.role == 'Editor' %}text-blue-600{% endif %}">
+              {{ user.profile.role }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="bg-white rounded-lg shadow mt-6">
+        <div class="px-4 py-3 border-b font-medium">Activity</div>
+        <div class="p-4 space-y-3">
+          <div>
+            <div class="text-sm text-gray-500">Total Orders</div>
+            <div class="text-2xl font-bold">{{ user.orders.count }}</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Addresses</div>
+            <div class="text-2xl font-bold">{{ user.addresses.count }}</div>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Last Login</div>
+            <div class="text-sm">
+              {% if user.last_login %}
+                {{ user.last_login|date:"M j, Y \a\t g:i A" }}
+              {% else %}
+                Never
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders & Addresses -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Recent Orders -->
+      {% if orders %}
+        <div class="bg-white rounded-lg shadow">
+          <div class="px-4 py-3 border-b font-medium">Recent Orders ({{ user.orders.count }})</div>
+          <div class="divide-y">
+            {% for order in orders %}
+              <div class="p-4 hover:bg-gray-50">
+                <div class="flex justify-between">
+                  <a href="{% url 'admin_order_detail' order.id %}" class="font-medium text-brand-red hover:underline">
+                    #{{ order.id }}
+                  </a>
+                  <span class="font-bold">${{ order.total }}</span>
+                </div>
+                <div class="mt-1 flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded-full text-xs
+                                {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'completed' %}bg-green-100 text-green-800
+                                {% elif order.status == 'cancelled' %}bg-red-100 text-red-800{% endif %}">
+                    {{ order.get_status_display }}
+                  </span>
+                  <span class="text-xs text-gray-500">{{ order.created_at|date:"M j" }}</span>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          {% if user.orders.count > 5 %}
+            <div class="p-3 text-center border-t">
+              <a href="{% url 'admin_order_list' %}?user={{ user.username }}" class="text-sm text-brand-red hover:underline">
+                View all orders →
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <!-- Addresses -->
+      {% if addresses %}
+        <div class="bg-white rounded-lg shadow">
+          <div class="px-4 py-3 border-b font-medium">Saved Addresses ({{ addresses.count }})</div>
+          <div class="divide-y">
+            {% for addr in addresses %}
+              <div class="p-4">
+                <div class="font-medium">{{ addr.address_line1 }}</div>
+                {% if addr.building_number %}<div>Building {{ addr.building_number }}</div>{% endif %}
+                {% if addr.floor %}<div>Floor {{ addr.floor }}</div>{% endif %}
+                {% if addr.apartment_number %}<div>Apt {{ addr.apartment_number }}</div>{% endif %}
+                <div>{{ addr.get_city_display }}</div>
+                {% if addr.address_notes %}
+                  <div class="mt-2 p-2 bg-gray-50 rounded text-xs">
+                    📝 {{ addr.address_notes|truncatewords:10 }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Confirm Email — ENOR.{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto mt-12">
+  <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+    <div class="w-16 h-16 bg-brand-red/10 text-brand-red rounded-full flex items-center justify-center mx-auto mb-4">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+       <p class="text-gray-600 mb-6">
+      Thank you your email is verified <span class="font-medium">{{ email }}</span>.<br>
+    </p>
+    {% comment %} <h2 class="text-2xl font-bold mb-2">Verify Your Email</h2>
+    <p class="text-gray-600 mb-6">
+      We've sent a confirmation link to <span class="font-medium">{{ email }}</span>.<br>
+      Please check your inbox (and spam folder).
+    </p>
+
+    <form method="post" class="inline-block">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary py-3 px-6">
+        Resend Confirmation Email
+      </button>
+    </form> {% endcomment %}
+
+    <div class="mt-6">
+      <a href="{% url 'account_login' %}" class="text-sm text-brand-red hover:underline">
+        ← Back to login
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

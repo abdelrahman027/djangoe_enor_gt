@@ -1,0 +1,190 @@
+
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}Enor | Shop{% endblock %}
+
+{% block content %}
+<div class="py-8">
+    
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-brand-black">Shop Products</h1>
+    <!-- Category Filter — Optimized for your Category model -->
+<div class="mb-6">
+  <!-- Desktop: Pills -->
+  <div class="hidden md:flex flex-wrap gap-2">
+    <!-- All Products -->
+    <a href="{% url 'product_list' %}"
+       class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+              {% if not selected_category %}bg-brand-red text-brand-white{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %}">
+      All
+    </a>
+    <!-- Active Categories -->
+    {% for cat in categories %}
+      <a href="?category={{ cat.slug }}"
+         class="px-4 py-2 rounded-full text-sm font-medium transition-colors
+                {% if selected_category and selected_category.slug == cat.slug %}bg-brand-red text-brand-white{% else %}bg-gray-100 text-gray-800 hover:bg-gray-200{% endif %}">
+        {{ cat.category_name }}
+      </a>
+    {% endfor %}
+  </div>
+
+  <!-- Mobile: Dropdown -->
+  <div x-data="{ open: false }" class="md:hidden">
+    <button 
+      @click="open = !open"
+      @keydown.escape="open = false"
+      class="flex items-center justify-between w-full px-4 py-2 bg-gray-100 rounded-lg text-gray-800 font-medium"
+      :aria-expanded="open"
+      aria-controls="mobile-categories"
+      aria-label="Filter by category">
+      <span class="truncate">
+        {% if selected_category %}
+          {{ selected_category.category_name }}
+        {% else %}
+          All Categories
+        {% endif %}
+      </span>
+      <svg class="w-4 h-4 ml-2 flex-shrink-0" 
+           :class="{ 'rotate-180': open }" 
+           fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+
+    <div 
+      x-show="open" 
+      x-cloak
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0 scale-95"
+      x-transition:enter-end="opacity-100 scale-100"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-95"
+      @click.away="open = false"
+      id="mobile-categories"
+      class="mt-2 absolute z-10 w-full bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+      
+      <a href="{% url 'product_list' %}"
+         class="block px-4 py-3 text-sm font-medium border-b {% if not selected_category %}bg-brand-red text-brand-white{% else %}text-gray-800 hover:bg-gray-50{% endif %}">
+        All
+      </a>
+      
+      {% for cat in categories %}
+        <a href="?category={{ cat.slug }}"
+           class="block px-4 py-3 text-sm font-medium border-b 
+                  {% if selected_category and selected_category.slug == cat.slug %}bg-brand-red text-brand-white{% else %}text-gray-800 hover:bg-gray-50{% endif %}">
+          {{ cat.category_name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+  </div>
+
+  {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {% for product in products %}
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow group animate-fade-up relative"
+             style="animation-delay: {{ forloop.counter0|divisibleby:1|add:forloop.counter0 }}ms;">
+          {% if product.image %}
+            <a href="{% url 'product_detail' product.slug %}">
+              <img src="{{ product.image.url }}"
+                   alt="{{ product.name }}"
+                   class="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300" id="main-image-{{product.id}}">
+            </a>
+          {% else %}
+            <div class="w-full aspect-square bg-gray-100 flex items-center justify-center">
+              <span class="text-gray-400">No image</span>
+            </div>
+          {% endif %}
+
+          <div class="p-4">
+            <a href="{% url 'product_detail' product.slug %}" class="block">
+              <h2 class="font-semibold text-lg text-brand-black hover:text-brand-red transition-colors truncate">
+                {{ product.name }}
+              </h2>
+            </a>
+            
+            <div class="mt-2 flex items-center gap-2">
+              {% if product.before_price and product.before_price > product.base_price %}
+                <span class="text-brand-red font-bold">${{ product.base_price }}</span>
+                <span class="text-gray-500 line-through text-sm">${{ product.before_price }}</span>
+              {% else %}
+                <span class="font-bold text-brand-black">${{ product.base_price }}</span>
+              {% endif %}
+            </div>
+            <div class="flex  items-center gap-2 absolute top-2 left-1">
+            {% if product.is_featured %}
+              <span class=" bg-brand-red text-white text-xs font-bold px-2 py-1 rounded">
+                Featured
+              </span>
+            {% endif %}
+                {% if product.is_on_sale %}
+              <span class=" bg-brand-red text-white text-xs font-bold px-2 py-1 rounded">
+                SALE
+              </span>
+            {% endif %}
+            </div>
+            <div class="flex items-center mt-2 space-x-2">
+              {% for image in product.images.all %}
+                  <div
+                  _="on click 
+                      set the #main-image-{{product.id}}'s src to '{{ image.image.url }}'"
+                  class=" w-5 h-5 bg-{{image.color.hex_code}} rounded-full" style="border: 2px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.1); cursor: pointer; background: {{image.color.hex_code}};">
+                    
+                  </div>
+                  {% endfor %}
+            </div>
+
+                        <div class="flex items-center mt-2">
+              <div class="flex text-yellow-400">
+                {% for i in "x"|rjust:5 %}
+                  <svg class="w-4 h-4" fill="{% if forloop.counter <= product.average_rating %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24">
+                    <path d="M12 .587l3.668 7.568 8.332 1.197-6.064 6.045 1.496 8.334L12 19.413 4.568 23.73l1.496-8.334-6.064-6.045 8.332-1.197z"/>
+                  </svg>
+                {% endfor %}
+              </div>
+              <span class="text-sm text-gray-500 ml-2">{{ product.rating }} <span class="text-xs"> ({{product.reviews.count}}) reviews</span>
+
+              </span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <div class="mt-8 flex justify-center">
+        <nav class="inline-flex space-x-1" aria-label="Pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}"
+               class="px-3 py-1 rounded border text-gray-700 hover:bg-brand-red hover:text-white">Prev</a>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <span class="px-3 py-1 bg-brand-red text-white rounded font-medium">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="?page={{ num }}"
+                 class="px-3 py-1 rounded border text-gray-700 hover:bg-gray-100">{{ num }}</a>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"
+               class="px-3 py-1 rounded border text-gray-700 hover:bg-brand-red hover:text-white">Next</a>
+          {% endif %}
+        </nav>
+      </div>
+    {% endif %}
+
+  {% else %}
+    <div class="text-center py-12">
+      <p class="text-gray-500">No products available at the moment.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

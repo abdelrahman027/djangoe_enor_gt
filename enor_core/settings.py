@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import environ 
 
+env = environ.Env()
+environ.Env.read_env()
+ENVIRONMENT=env('ENVIRONMENT')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,14 +24,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-nbot1*uefych0p^%@kfjau#g&ynr*j5*ak6*g+5&km$pk3dvut'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == 'development':
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = []
+if ENVIRONMENT == 'development':
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = ['*']
 
-
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost:8000'
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,17 +51,53 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'django.contrib.sites',  # ← Required for allauth
+    # Allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.apple',
+    
+    'widget_tweaks', # for form styling
+    #my apps
     'category',
+    'enor_profile',
+    'enor_store',
+    'enor_cart',
+    'enor_order',
+    'enor_admin',
+    'enor_content',
+
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.security.csrf': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #all auth mw
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'enor_core.urls'
@@ -63,6 +112,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'enor_cart.context_processors.cart_count',
+                'enor_store.context_processors.products_processor',
+                'enor_store.context_processors.categories_processor',
+                'enor_content.context_processors.social_links_processor',
             ],
         },
     },
@@ -70,7 +123,61 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'enor_core.wsgi.application'
 
+# ===== ALLAUTH CONFIG =====
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
+# Site ID (required)
+SITE_ID = 1
+
+# Email (for account verification, etc.)
+# ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+# ACCOUNT_EMAIL_VERIFICATION = 'optional'  # or 'optional'
+ACCOUNT_LOGIN_METHODS = {'email'}
+# ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True  # auto-login after confirm
+# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+
+LOGIN_REDIRECT_URL = '/'          # after login
+LOGOUT_REDIRECT_URL = '/'         # after logout
+ACCOUNT_LOGOUT_ON_GET = True      # for ease (or set to False for confirmation)
+SOCIALACCOUNT_LOGIN_ON_GET = True  # auto login after social signup
+
+# Password reset
+# PASSWORD_RESET_TIMEOUT = 259200   # 1 hour (default: 3 days)
+
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = True  # auto-login after reset
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+
+# Prevent signups from non-social login (optional)
+# ACCOUNT_ADAPTER = 'shop.adapters.NoPasswordSignupAdapter'
+
+# Custom form styling (optional — see templates below)
+ACCOUNT_FORMS = {
+    'signup': 'allauth.account.forms.SignupForm',
+    'login': 'allauth.account.forms.LoginForm',
+}
+# Apple Sign In
+SOCIALACCOUNT_PROVIDERS = {
+    # 'apple': {
+    #     'APP': {
+    #         'client_id': 'com.boost.signin',        # Services ID
+    #         'secret': '-----BEGIN PRIVATE KEY-----\nMIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwE...-----END PRIVATE KEY-----',
+    #         'key_id': 'ABC123DEFG',
+    #         'team_id': 'TEAM9876543',
+    #     },
+    #     'SCOPE': ['email', 'name'],  # Apple only sends name/email on first login
+    #     'AUTH_PARAMS': {'access_type': 'offline'},
+    # },
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'EMAIL_AUTHENTICATION': True,
+    }
+}
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
@@ -100,6 +207,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST='smtp.zoho.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER='no.reply@boostuae.com'
+DEFAULT_FROM_EMAIL = 'no.reply@boostuae.com'
+EMAIL_HOST_PASSWORD='BOOST@2025-kwzpR8x2P'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
@@ -121,3 +237,4 @@ STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

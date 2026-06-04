@@ -1,0 +1,11 @@
+Hi,
+
+Thanks for signing up with Enor!
+
+Please confirm your email by clicking the link below:
+
+{{ activate_url }}
+
+If you didn’t request this, please ignore this email.
+
+— The BOOST Team

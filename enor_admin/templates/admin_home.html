@@ -1,0 +1,108 @@
+<!-- templates/admin/dashboard.html -->
+{% extends 'shared/adminbase.html' %}
+
+{% block title %}Admin Dashboard | Enor{% endblock %}
+{% block header %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <div class="p-2 bg-blue-100 rounded-lg">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-gray-500">Products</p>
+        <p class="text-xl font-bold">{{ total_products }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <div class="p-2 bg-green-100 rounded-lg">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-gray-500">Variants</p>
+        <p class="text-xl font-bold">{{ total_variants }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <div class="p-2 bg-yellow-100 rounded-lg">
+        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-gray-500">Orders (Pending)</p>
+        <p class="text-xl font-bold text-yellow-600">{{ pending_orders }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-4">
+    <div class="flex items-center">
+      <div class="p-2 bg-purple-100 rounded-lg">
+        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 2a6 6 0 11-12 0 6 6 0 0112 0zm6 9a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div class="ml-3">
+        <p class="text-sm text-gray-500">Active Users</p>
+        <p class="text-xl font-bold">{{ active_users }} / {{ total_users }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <!-- Recent Orders -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-4 py-3 border-b font-medium">Recent Orders</div>
+    <div class="divide-y">
+      {% for order in recent_orders %}
+        <div class="p-4 hover:bg-gray-50">
+          <div class="flex justify-between">
+            <span class="font-medium">#{{ order.id }}</span>
+            <span class="text-sm {% if order.status == 'pending' %}text-yellow-600{% elif order.status == 'completed' %}text-green-600{% endif %}">
+              {{ order.get_status_display }}
+            </span>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">{{ order.user.username }}</p>
+          <p class="text-sm font-medium mt-1">${{ order.total }}</p>
+        </div>
+      {% empty %}
+        <div class="p-4 text-center text-gray-500">No orders yet</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Recent Products -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-4 py-3 border-b font-medium">Recent Products</div>
+    <div class="divide-y">
+      {% for product in recent_products %}
+        <div class="p-4 hover:bg-gray-50">
+          <div class="font-medium">{{ product.name }}</div>
+          <div class="flex items-center mt-2">
+            <span class="text-xs px-2 py-1 bg-gray-100 rounded mr-2">
+              {{ product.category.category_name }}
+            </span>
+            <span class="text-sm text-gray-500">${{ product.base_price }}</span>
+          </div>
+        </div>
+      {% empty %}
+        <div class="p-4 text-center text-gray-500">No products yet</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

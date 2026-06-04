@@ -1,0 +1,41 @@
+<!-- templates/products/partials/size_style_selector.html -->
+{% if items %}
+  {% if items|length > 1 %}
+    <div>
+      <label class="block font-medium text-gray-800 mb-2">Select Variant</label>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {% for item in items %}
+          <button type="button"
+                  data-item-id="{{ item.id }}"
+                  class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 text-left"
+                  title="Stock: {{ item.stock_quantity }}{% if not item.is_in_stock %} (Out of Stock){% endif %}"
+                  {% if not item.is_in_stock %}disabled{% endif %}>
+            <span>
+              {% if item.color %}{{ item.color.name }}{% endif %}
+              {% if item.size %} / {{ item.size.name }}{% endif %}
+              {% if item.style %} / {{ item.style.name }}{% endif %}
+            </span>
+            <span class="font-medium">${{ item.price }}</span>
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+  {% elif items|length == 1 %}
+    {% with item=items.0 %}
+      <div class="text-gray-600">
+        <span>Price: <strong>${{ item.price }}</strong></span>
+        <span class="ml-4">Stock: 
+          {% if item.is_in_stock %}
+            <span class="text-green-600">{{ item.stock_quantity }} in stock</span>
+          {% else %}
+            <span class="text-red-600">Out of stock</span>
+          {% endif %}
+        </span>
+      </div>
+      <input type="hidden" name="product_item_id" value="{{ item.id }}" id="selected-item-id">
+      <script>document.getElementById('add-to-cart-btn').disabled = {{ item.is_in_stock|yesno:"false,true" }};</script>
+    {% endwith %}
+  {% endif %}
+{% else %}
+  <p class="text-red-600">No active variants available.</p>
+{% endif %}
