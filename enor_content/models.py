@@ -32,7 +32,7 @@ class Contact_us(models.Model):
 class Social_links(models.Model):
     name = models.CharField(max_length=50)
     link = models.URLField(max_length=255)
-    icon = models.CharField(max_length=50)
+    icon = models.TextField()
     order = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

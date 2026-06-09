@@ -9,8 +9,8 @@ class ContactForm(forms.ModelForm):
         exclude = ['submitted_at']
         widgets = {
             'name':forms.TextInput(attrs={"placeholder":"enter your name","class":"form-textarea w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red"}),
-            'email':forms.TextInput(attrs={"placeholder":"your@email.com"}),
-            'subject':forms.TextInput(attrs={"placeholder":"How can we help?"}),
+            'email':forms.TextInput(attrs={"placeholder":"your@email.com","class":"form-textarea w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red"}),
+            'subject':forms.TextInput(attrs={"placeholder":"How can we help?","class":"form-textarea w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red"}),
             'message':forms.TextInput(attrs={"placeholder":"Tell us more...","class":"form-textarea w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-red focus:border-brand-red","rows":5}),
         }
         

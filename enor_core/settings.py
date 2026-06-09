@@ -119,6 +119,7 @@ TEMPLATES = [
                 'enor_store.context_processors.products_processor',
                 'enor_store.context_processors.categories_processor',
                 'enor_content.context_processors.social_links_processor',
+                'enor_content.context_processors.contact_info_processor',
             ],
         },
     },
