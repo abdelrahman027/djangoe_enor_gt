@@ -223,14 +223,18 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST='smtp.zoho.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER='no.reply@boostuae.com'
-DEFAULT_FROM_EMAIL = 'no.reply@boostuae.com'
-EMAIL_HOST_PASSWORD='BOOST@2025-kwzpR8x2P'
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+
+# EMAIL_HOST_USER = 'Enorfitness1@gmail.com'
+# EMAIL_HOST_PASSWORD = 'your_app_password'  # NOT your normal password
+
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+EMAIL_BACKEND = "enor_core.resend_backend.ResendBackend"
+
+DEFAULT_FROM_EMAIL = "noreply@enorfitness.com"
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

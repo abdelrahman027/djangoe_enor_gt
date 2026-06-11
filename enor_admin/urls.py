@@ -52,4 +52,23 @@ path('settings/social/<int:social_id>/edit/', views.admin_social_edit, name='adm
 
 path('settings/newsletter/', views.admin_newsletter_list, name='admin_newsletter_list'),
 
+
+# Colors
+path('attributes/colors/', views.admin_color_list, name='admin_color_list'),
+path('attributes/colors/create/', views.admin_color_create, name='admin_color_create'),
+path('attributes/co lors/<int:color_id>/edit/', views.admin_color_edit, name='admin_color_edit'),
+path('attributes/colors/<int:color_id>/delete/', views.admin_color_delete, name='admin_color_delete'),
+
+# Sizes
+path('attributes/sizes/', views.admin_size_list, name='admin_size_list'),
+path('attributes/sizes/create/', views.admin_size_create, name='admin_size_create'),
+path('attributes/sizes/<int:size_id>/edit/', views.admin_size_edit, name='admin_size_edit'),
+path('attributes/sizes/<int:size_id>/delete/', views.admin_size_delete, name='admin_size_delete'),
+
+# Styles
+path('attributes/styles/', views.admin_style_list, name='admin_style_list'),
+path('attributes/styles/create/', views.admin_style_create, name='admin_style_create'),
+path('attributes/styles/<int:style_id>/edit/', views.admin_style_edit, name='admin_style_edit'),
+path('attributes/styles/<int:style_id>/delete/', views.admin_style_delete, name='admin_style_delete'),
+
 ]

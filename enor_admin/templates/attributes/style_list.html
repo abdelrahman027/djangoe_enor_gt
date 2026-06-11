@@ -1,0 +1,39 @@
+{% extends 'shared/adminbase.html' %}
+{% block title %}Styles | Enor Admin{% endblock %}
+{% block header %}Styles{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-xl font-semibold text-gray-800">Manage Styles</h2>
+  <a href="{% url 'admin_style_create' %}" class="px-4 py-2 bg-brand-red text-white rounded hover:bg-brand-red-dark flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+    Add Style
+  </a>
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      {% for style in styles %}
+      <tr>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ style.name }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <a href="{% url 'admin_style_edit' style.id %}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+          <a href="{% url 'admin_style_delete' style.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="2" class="px-6 py-8 text-center text-gray-500">No styles found. Click "Add Style" to create one.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

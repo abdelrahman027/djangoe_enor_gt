@@ -849,3 +849,168 @@ def admin_terms_and_conditions_setting(request):
 @admin_required(roles=['Admin','Editor'])
 def admin_shipping_policy_setting(request):
     return render(request, 'pages/shipping_policy_setting.html')
+
+
+
+
+
+# ===== COLOR CRUD =====
+@admin_required(roles=['Admin', 'Editor'])
+def admin_color_list(request):
+    colors = Color.objects.all().order_by('name')
+    return render(request, 'attributes/color_list.html', {'colors': colors})
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_color_create(request):
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            hex_code = request.POST.get('hex_code', '').strip()
+            if not name or not hex_code:
+                messages.error(request, "❌ Name and Hex Code are required.")
+            elif Color.objects.filter(name=name).exists():
+                messages.error(request, "❌ Color name already exists.")
+            else:
+                Color.objects.create(name=name, hex_code=hex_code)
+                messages.success(request, f"✅ Color '{name}' created!")
+                return redirect('admin_color_list')
+        except Exception as e:
+            messages.error(request, f"❌ Error: {str(e)}")
+    return render(request, 'attributes/color_form.html')
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_color_edit(request, color_id):
+    color = get_object_or_404(Color, id=color_id)
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            hex_code = request.POST.get('hex_code', '').strip()
+            if not name or not hex_code:
+                messages.error(request, "❌ Name and Hex Code are required.")
+            elif Color.objects.filter(name=name).exclude(id=color.id).exists():
+                messages.error(request, "❌ Color name already exists.")
+            else:
+                color.name = name
+                color.hex_code = hex_code
+                color.save()
+                messages.success(request, f"✅ Color '{name}' updated!")
+                return redirect('admin_color_list')
+        except Exception as e:
+            messages.error(request, f"❌ Error: {str(e)}")
+    return render(request, 'attributes/color_form.html', {'color': color})
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_color_delete(request, color_id):
+    color = get_object_or_404(Color, id=color_id)
+    if request.method == 'POST':
+        name = color.name
+        color.delete()
+        messages.success(request, f"🗑️ Color '{name}' deleted.")
+        return redirect('admin_color_list')
+    return render(request, 'attributes/attribute_confirm_delete.html', {'attribute': color, 'type': 'Color'})
+
+
+# ===== SIZE CRUD =====
+@admin_required(roles=['Admin', 'Editor'])
+def admin_size_list(request):
+    sizes = Size.objects.all().order_by('name')
+    return render(request, 'attributes/size_list.html', {'sizes': sizes})
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_size_create(request):
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            if not name:
+                messages.error(request, "❌ Size name is required.")
+            elif Size.objects.filter(name=name).exists():
+                messages.error(request, "❌ Size name already exists.")
+            else:
+                Size.objects.create(name=name)
+                messages.success(request, f"✅ Size '{name}' created!")
+                return redirect('admin_size_list')
+        except Exception as e:
+            messages.error(request, f"❌ Error: {str(e)}")
+    return render(request, 'attributes/size_form.html')
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_size_edit(request, size_id):
+    size = get_object_or_404(Size, id=size_id)
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            if not name:
+                messages.error(request, "❌ Size name is required.")
+            elif Size.objects.filter(name=name).exclude(id=size.id).exists():
+                messages.error(request, "❌ Size name already exists.")
+            else:
+                size.name = name
+                size.save()
+                messages.success(request, f"✅ Size '{name}' updated!")
+                return redirect('admin_size_list')
+        except Exception as e:
+            messages.error(request, f"❌ Error: {str(e)}")
+    return render(request, 'attributes/size_form.html', {'size': size})
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_size_delete(request, size_id):
+    size = get_object_or_404(Size, id=size_id)
+    if request.method == 'POST':
+        name = size.name
+        size.delete()
+        messages.success(request, f"🗑️ Size '{name}' deleted.")
+        return redirect('admin_size_list')
+    return render(request, 'attributes/attribute_confirm_delete.html', {'attribute': size, 'type': 'Size'})
+
+
+# ===== STYLE CRUD =====
+@admin_required(roles=['Admin', 'Editor'])
+def admin_style_list(request):
+    styles = Style.objects.all().order_by('name')
+    return render(request, 'attributes/style_list.html', {'styles': styles})
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_style_create(request):
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            if not name:
+                messages.error(request, "❌ Style name is required.")
+            elif Style.objects.filter(name=name).exists():
+                messages.error(request, "❌ Style name already exists.")
+            else:
+                Style.objects.create(name=name)
+                messages.success(request, f"✅ Style '{name}' created!")
+                return redirect('admin_style_list')
+        except Exception as e:
+            messages.error(request, f"❌ Error: {str(e)}")
+    return render(request, 'attributes/style_form.html')
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_style_edit(request, style_id):
+    style = get_object_or_404(Style, id=style_id)
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            if not name:
+                messages.error(request, "❌ Style name is required.")
+            elif Style.objects.filter(name=name).exclude(id=style.id).exists():
+                messages.error(request, "❌ Style name already exists.")
+            else:
+                style.name = name
+                style.save()
+                messages.success(request, f"✅ Style '{name}' updated!")
+                return redirect('admin_style_list')
+        except Exception as e:
+            messages.error(request, f"❌ Error: {str(e)}")
+    return render(request, 'attributes/style_form.html', {'style': style})
+
+@admin_required(roles=['Admin', 'Editor'])
+def admin_style_delete(request, style_id):
+    style = get_object_or_404(Style, id=style_id)
+    if request.method == 'POST':
+        name = style.name
+        style.delete()
+        messages.success(request, f"🗑️ Style '{name}' deleted.")
+        return redirect('admin_style_list')
+    return render(request, 'attributes/attribute_confirm_delete.html', {'attribute': style, 'type': 'Style'})

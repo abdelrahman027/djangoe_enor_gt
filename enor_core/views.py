@@ -2,11 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Prefetch,F
+from enor_core.utils import send_resend_email
 from enor_store.models import Product,ProductImage,ProductItem,ProductReview
 
 
 def home(request):
     # messages.info(request, "Welcome to Enor! Explore our latest products and offers.")
+    # send_resend_email("Test Email", "noreply@enorfitness.com", "body24792@gmail.com", "<h1>Test Email</h1>")
     products = Product.objects.filter(
         is_available=True,
         before_price__gt=F('base_price')

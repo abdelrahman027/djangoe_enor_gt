@@ -1,0 +1,23 @@
+{% extends 'shared/adminbase.html' %}
+{% block title %}Delete {{ type }} | Enor Admin{% endblock %}
+{% block header %}Delete {{ type }}{% endblock %}
+
+{% block content %}
+<div class="max-w-lg bg-white rounded-lg shadow p-6">
+  <div class="flex items-center mb-4">
+    <svg class="w-10 h-10 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    </svg>
+    <h2 class="text-xl font-bold text-gray-900">Are you sure?</h2>
+  </div>
+  <p class="text-gray-600 mb-6">
+    You are about to delete the {{ type|lower }} <strong>"{{ attribute.name }}"</strong>. 
+    This will remove this {{ type|lower }} from all product variants. This action cannot be undone.
+  </p>
+  <form method="post" class="flex justify-end gap-3">
+    {% csrf_token %}
+    <a href="javascript:history.back()" class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">Cancel</a>
+    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Yes, Delete</button>
+  </form>
+</div>
+{% endblock %}

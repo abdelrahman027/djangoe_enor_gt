@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Order #{{ order.id }}</title>
+    <style type="text/css">
+        /* Reset styles for email clients */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #f3f4f6; }
+        
+        /* Responsive styles for mobile devices */
+        @media only screen and (max-width: 620px) {
+            .container { width: 100% !important; padding: 0 16px !important; }
+            .padding { padding: 16px !important; }
+            .two-col td { display: block !important; width: 100% !important; padding: 0 0 16px 0 !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <!-- Preheader text (hidden preview text in inbox) -->
+    <div style="display: none; max-height: 0px; overflow: hidden;">
+        Thank you for your order #RF{{ order.id }}-ORD{{ order.id }}. Your order has been placed successfully.
+    </div>
+
+    <!-- Outer Wrapper -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #f3f4f6;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+                <!-- Main Container -->
+                <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" style="border-collapse: collapse; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin: 0 auto;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td class="padding" style="padding: 32px 24px; background-color: #111827; background-image: linear-gradient(135deg, #111827 0%, #1f2937 100%); color: #ffffff;">
+                            <h1 style="margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Order #RF{{ order.id }}-ORD{{ order.id }}</h1>
+                            <p style="margin: 8px 0 0; font-size: 14px; color: #9ca3af;">
+                                Placed on {{ order.created_at|date:"M j, Y \a\t g:i A" }}
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Status & Total -->
+                    <tr>
+                        <td class="padding" style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                <tr>
+                                    <td valign="middle">
+                                        <span style="display: inline-block; padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 600; text-transform: uppercase;
+                                            {% if order.status == 'pending' %}background-color: #fef3c7; color: #92400e;
+                                            {% elif order.status == 'paid' or order.status == 'completed' %}background-color: #d1fae5; color: #065f46;
+                                            {% elif order.status == 'cancelled' %}background-color: #fee2e2; color: #991b1b;
+                                            {% elif order.status == 'deliverd' %}background-color: #dbeafe; color: #1e40af;{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td align="right" valign="middle">
+                                        <div style="font-size: 28px; font-weight: 800; color: #111827; line-height: 1;">${{ order.total }}</div>
+                                        <div style="font-size: 12px; color: #6b7280; margin-top: 6px;">
+                                            Ref: <code style="background-color: #f3f4f6; padding: 3px 6px; border-radius: 4px; font-family: monospace;">{{ order.reference_number|slice:":8" }}</code>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Order Items -->
+                    <tr>
+                        <td class="padding" style="padding: 24px;">
+                            <h2 style="margin: 0 0 20px; font-size: 18px; font-weight: 700; color: #111827;">Order Items</h2>
+                            
+                            {% for item in order.items.all %}
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-bottom: 20px;">
+                                <tr>
+                                    <td width="64" valign="top">
+                                        {% if item.product_item.product.image %}
+                                            <!-- Note: Since you use AWS S3, image.url should already be an absolute URL -->
+                                            <img src="{{ item.product_item.product.image.url }}" alt="{{ item.product_item.product.name }}" width="56" height="56" style="border-radius: 8px; object-fit: cover; display: block; border: 1px solid #e5e7eb;">
+                                        {% else %}
+                                            <div style="width: 56px; height: 56px; background-color: #f3f4f6; border-radius: 8px; text-align: center; line-height: 56px; color: #9ca3af; font-size: 20px;">?</div>
+                                        {% endif %}
+                                    </td>
+                                    <td style="padding-left: 16px;" valign="top">
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 600; color: #1f2937; line-height: 1.4;">{{ item.product_item.product.name }}</h3>
+                                        <p style="margin: 4px 0 0; font-size: 13px; color: #6b7280; line-height: 1.4;">
+                                            {% if item.product_item.color %}{{ item.product_item.color.name }}{% endif %}
+                                            {% if item.product_item.size %} • {{ item.product_item.size.name }}{% endif %}
+                                            {% if item.product_item.style %} • {{ item.product_item.style.name }}{% endif %}
+                                        </p>
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 10px;">
+                                            <tr>
+                                                <td style="font-size: 14px; font-weight: 500; color: #4b5563;">${{ item.price }} × {{ item.quantity }}</td>
+                                                <td align="right" style="font-size: 15px; font-weight: 700; color: #111827;">${{ item.get_total }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            {% if not forloop.last %}
+                                <div style="border-bottom: 1px solid #f3f4f6; margin-bottom: 20px;"></div>
+                            {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+
+                    <!-- Payment & Summary -->
+                    <tr>
+                        <td class="padding" style="padding: 0 24px 24px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                <tr class="two-col">
+                                    <!-- Payment Info -->
+                                    <td width="48%" valign="top" style="padding-right: 12px;">
+                                        <div style="background-color: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid #f3f4f6;">
+                                            <h3 style="margin: 0 0 16px; font-size: 15px; font-weight: 700; color: #111827;">Payment Info</h3>
+                                            <p style="margin: 0 0 12px; font-size: 13px; line-height: 1.5;">
+                                                <span style="color: #6b7280; display: block; margin-bottom: 2px;">Method</span>
+                                                <strong style="color: #1f2937;">
+                                                    {% if order.paymment_method == 'cod' %}Cash on Delivery
+                                                    {% elif order.paymment_method == 'instapay' %}InstaPay
+                                                    {% else %}{{ order.paymment_method|title }}{% endif %}
+                                                </strong>
+                                            </p>
+                                            {% if order.instapay_payment_id %}
+                                            <p style="margin: 0; font-size: 13px; line-height: 1.5;">
+                                                <span style="color: #6b7280; display: block; margin-bottom: 2px;">InstaPay ID</span>
+                                                <code style="font-size: 12px; background-color: #e5e7eb; padding: 3px 6px; border-radius: 4px; font-family: monospace; color: #374151;">{{ order.instapay_payment_id|slice:":12" }}…</code>
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <!-- Summary -->
+                                    <td width="48%" valign="top" style="padding-left: 12px;">
+                                        <div style="background-color: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid #f3f4f6;">
+                                            <h3 style="margin: 0 0 16px; font-size: 15px; font-weight: 700; color: #111827;">Summary</h3>
+                                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 13px;">
+                                                <tr>
+                                                    <td style="padding: 4px 0; color: #4b5563;">Subtotal</td>
+                                                    <td align="right" style="padding: 4px 0; color: #1f2937; font-weight: 500;">${{ order.subtotal }}</td>
+                                                </tr>
+                                                {% if order.voucher %}
+                                                <tr>
+                                                    <td style="padding: 4px 0; color: #059669;">Voucher ({{ order.voucher.code }})</td>
+                                                    <td align="right" style="padding: 4px 0; color: #059669; font-weight: 500;">−${{ order.discount }}</td>
+                                                </tr>
+                                                {% endif %}
+                                                <tr>
+                                                    <td colspan="2" style="border-top: 1px solid #e5e7eb; padding: 0; height: 1px;"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 12px 0 0; font-weight: 700; color: #111827; font-size: 15px;">Total</td>
+                                                    <td align="right" style="padding: 12px 0 0; font-weight: 800; color: #111827; font-size: 15px;">${{ order.total }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer / Help -->
+                    <tr>
+                        <td style="padding: 32px 24px; background-color: #f9fafb; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #111827;">Need Help?</h3>
+                            <p style="margin: 0 0 8px; font-size: 14px; color: #4b5563; line-height: 1.6;">
+                                whatsapp: <a href="tel:+97141234567" style="color: #e11d48; text-decoration: none; font-weight: 600;">01212443372</a>
+                            </p>
+                            <p style="margin: 0 0 24px; font-size: 14px; color: #4b5563; line-height: 1.6;">
+                                Email: <a href="mailto:enorfitness1@gmail.com" style="color: #e11d48; text-decoration: none; font-weight: 600;">enorfitness1@gmail.com</a>
+                            </p>
+                            <p style="margin: 0; font-size: 12px; color: #9ca3af;">
+                                © {% now "Y" %} Enor Fitness. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

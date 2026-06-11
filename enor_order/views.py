@@ -1,5 +1,7 @@
 from django.shortcuts import render ,redirect , get_object_or_404
+from django.template.loader import render_to_string
 from enor_cart.models import CartItem,Cart
+from enor_core.utils import send_resend_email
 from .models import Voucher,VoucherUsage,Order,OrderItem
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -128,6 +130,7 @@ def create_order_from_cart(cart, payment_method="cod", instapay_payment_id=None,
 
 @login_required
 def order_place(request):
+    
     if request.method != "POST":
         return redirect('order_placeholder')
     payment_method = request.POST.get('payment_method')
@@ -144,6 +147,12 @@ def order_place(request):
             address_id=address_id,
             instapay_payment_id=instapay_payment_id,
         )
+        messages.success(request, "Order placed successfully")
+        html_message = render_to_string('emails/order_confirmation.html', {
+            'order': order,
+            'request': request
+        })  
+        send_resend_email("Order placed successfully", "noreply@enorfitness.com", request.user.email, html_message)
     except Exception as e:
         messages.error(request, str(e))
         print("error ",e)

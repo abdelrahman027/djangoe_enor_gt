@@ -1,0 +1,45 @@
+{% extends 'shared/adminbase.html' %}
+{% block title %}Colors | Enor Admin{% endblock %}
+{% block header %}Colors{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+  <h2 class="text-xl font-semibold text-gray-800">Manage Colors</h2>
+  <a href="{% url 'admin_color_create' %}" class="px-4 py-2 bg-brand-red text-white rounded hover:bg-brand-red-dark flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+    Add Color
+  </a>
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-hidden">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preview</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hex Code</th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      {% for color in colors %}
+      <tr>
+        <td class="px-6 py-4 whitespace-nowrap">
+          <div class="w-8 h-8 rounded-full border border-gray-200 shadow-sm" style="background-color: {{ color.hex_code }};"></div>
+        </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ color.name }}</td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><code class="bg-gray-100 px-2 py-0.5 rounded">{{ color.hex_code }}</code></td>
+        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+          <a href="{% url 'admin_color_edit' color.id %}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+          <a href="{% url 'admin_color_delete' color.id %}" class="text-red-600 hover:text-red-900">Delete</a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="px-6 py-8 text-center text-gray-500">No colors found. Click "Add Color" to create one.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

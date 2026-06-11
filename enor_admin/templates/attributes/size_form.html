@@ -1,0 +1,23 @@
+{% extends 'shared/adminbase.html' %}
+{% block title %}{% if size %}Edit{% else %}Add{% endif %} Size | Enor Admin{% endblock %}
+{% block header %}{% if size %}Edit Size: {{ size.name }}{% else %}Add New Size{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+  <form method="post" class="bg-white rounded-lg shadow p-6 space-y-6">
+    {% csrf_token %}
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Size Name *</label>
+      <input type="text" name="name" required value="{{ size.name|default:'' }}"
+             class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-brand-red"
+             placeholder="e.g. Small, Medium, Large, 42, XL">
+    </div>
+    <div class="flex justify-end gap-3 pt-4 border-t">
+      <a href="{% url 'admin_size_list' %}" class="px-4 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">Cancel</a>
+      <button type="submit" class="px-4 py-2 bg-brand-red text-white rounded hover:bg-brand-red-dark">
+        {% if size %}Update Size{% else %}Create Size{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
