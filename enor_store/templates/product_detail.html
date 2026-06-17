@@ -41,7 +41,7 @@
       <!-- Thumbnails (first image per color) -->
       {% if product.images.exists %}
         <div class="flex flex-wrap gap-2">
-          {% for image in product.images.all|slice:":4" %}
+          {% for image in product.images.all|slice:":6" %}
             <button type="button"
                     class="w-12 h-12 rounded border-2 border-gray-200 hover:border-brand-red overflow-hidden"
                     _="on click set #main-image's src to '{{ image.image.url }}'">
