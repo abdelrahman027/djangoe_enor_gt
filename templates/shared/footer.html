@@ -6,20 +6,27 @@
       <div>
         <a href="{% url 'home' %}" class="text-sm font-bold flex items-center gap-1">
           <img src="{% static 'images/ENOR_LOGO_NOBG.png' %}" alt="ENOR Logo" class="w-16 object-cover">
-          <!-- <div>
-          ENOR<span class="text-brand-red">.</span>
-        </div> -->
         </a>
         <p class="max-w-xs mb-2">Empowering performance through premium Accessories, Gear, and sports essentials.</p>
+        
         {% if social_links %}
         <div class="border-t border-gray-800 pt-6">
           <h4 class="text-brand-white font-medium mb-3">Follow Us</h4>
-          <ul class="flex gap-2 items-center">
+          <ul class="flex gap-3 items-center">
             {% for social_link in social_links %}
-            <li class="flex items-center gap-2">
-              <a href="{{ social_link.link }}"
-                class="w-8 h-8 bg-white hover:bg-brand-red rounded-full flex items-center justify-center p-1">
-                {{social_link.icon | safe}}
+            <li>
+              <!-- 
+                ✅ FIXES APPLIED:
+                1. Added text-brand-black & hover:text-white to ensure the icon is visible.
+                2. Added [&>svg]... [&>i]... [&>img]... to force the inner icon to a fixed size (w-5 h-5).
+                3. Added overflow-hidden to prevent icons from breaking the circular shape.
+              -->
+              <a href="{{ social_link.link }}" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 aria-label="Follow us on {{ social_link.name }}"
+                 class="w-9 h-9 bg-white hover:bg-brand-red text-brand-black hover:text-white rounded-full flex items-center justify-center transition-colors duration-200 overflow-hidden [&>svg]:w-5 [&>svg]:h-5 [&>svg]:fill-current [&>i]:text-lg [&>i]:leading-none [&>img]:w-5 [&>img]:h-5 [&>img]:object-contain">
+                {{ social_link.icon|safe }}
               </a>
             </li>
             {% endfor %}
@@ -32,8 +39,7 @@
         <h4 class="text-brand-white font-medium mb-3">Shop</h4>
         <ul class="space-y-2">
           <li><a href="{% url 'product_list' %}" class="hover:text-brand-red transition-colors">All Products</a></li>
-          <li><a href="{% url 'product_list' %}" class="hover:text-brand-red transition-colors">Featured Products</a>
-          </li>
+          <li><a href="{% url 'product_list' %}" class="hover:text-brand-red transition-colors">Featured Products</a></li>
           <li><a href="{% url 'hotdeals' %}" class="hover:text-brand-red transition-colors">Hot Deals</a></li>
         </ul>
       </div>
@@ -58,3 +64,15 @@
     </div>
   </div>
 </footer>
+
+<!-- 
+  ✅ FALLBACK CSS: 
+  If your SVGs in the database have a hardcoded white fill (e.g., fill="#fff"), 
+  Tailwind's fill-current won't override it. This CSS forces the color to match the text.
+-->
+<style>
+  footer a svg {
+    fill: currentColor !important;
+    color: currentColor !important;
+  }
+</style>
