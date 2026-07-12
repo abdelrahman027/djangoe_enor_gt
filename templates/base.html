@@ -243,8 +243,12 @@
     const searchButton = document.getElementById('search-button');
     const search_results = document.getElementById('search-results');
     const static_products = '{{static_products_json}}'
-    const rdata = JSON.parse(static_products.replace(/&quot;/g, '"'))
-    console.log(rdata);
+    const rdata = JSON.parse(
+      static_products
+        .replace(/&quot;/g, '"')          // fix HTML‑encoded quotes
+        .replace(/\r?\n/g, '\\n')        // escape newlines and carriage returns
+    );
+    {% comment %} console.log(rdata); {% endcomment %}
 
 
     // Open search modal

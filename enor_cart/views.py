@@ -1,8 +1,11 @@
+from decimal import Decimal
 from django.shortcuts import render, get_object_or_404,redirect
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+
+from enor_settings.models import Shipping
 from .models import Cart, CartItem
 from enor_store.models import ProductItem
 from urllib.parse import urlencode
@@ -39,13 +42,14 @@ def cart_detail(request):
     cart_items = CartItem.objects.filter(cart=cart)
     total= cart.get_total()
     sub_total= cart.get_subtotal()
-    difference = sub_total - total
+    difference = (sub_total - total) + (Shipping.objects.first().get_amount() if Shipping.objects.first() else Decimal(100.00))
     context = {
         'cart': cart,
         'cart_items': cart_items,
         'total': total,
         'sub_total': sub_total,
         'difference': difference,
+        'shipping': Shipping.objects.first().get_amount() if Shipping.objects.first() else 100.00
     }
     return render(request, 'cart_detail.html', context)
 

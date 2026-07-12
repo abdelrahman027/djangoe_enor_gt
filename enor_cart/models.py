@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from enor_store.models import ProductItem
 from enor_order.models import Voucher
 from decimal import Decimal
+from enor_settings.models import Shipping
+
 # Create your models here.
 class Cart(models.Model):
     user = models.OneToOneField(  # ✔ one active cart per user
@@ -37,6 +39,7 @@ class Cart(models.Model):
 
     def get_total(self):
         subtotal = self.get_subtotal()
+        subtotal += Shipping.objects.first().get_amount() if Shipping.objects.first() else Decimal('100.00')
         discount = self.get_discount()
 
         # auto-remove invalid voucher

@@ -1,7 +1,9 @@
+from decimal import Decimal
 from django.shortcuts import render ,redirect , get_object_or_404
 from django.template.loader import render_to_string
 from enor_cart.models import CartItem,Cart
 from enor_core.utils import send_resend_email
+from enor_settings.models import Shipping
 from .models import Voucher,VoucherUsage,Order,OrderItem
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -25,6 +27,7 @@ def checkout_view(request):
         'sub_total': sub_total,
         'cart_items': cart_items,
         'cart': cart,
+        'shipping': Shipping.objects.first().get_amount() if Shipping.objects.first() else 100.00
     }
     return render(request, 'checkout.html',context=context)
 
@@ -150,7 +153,8 @@ def order_place(request):
         messages.success(request, "Order placed successfully")
         html_message = render_to_string('emails/order_confirmation.html', {
             'order': order,
-            'request': request
+            'request': request,
+            "shipping": Shipping.objects.first().get_amount() if Shipping.objects.first() else Decimal(100.00)
         })  
         send_resend_email("Order placed successfully", "noreply@enorfitness.com", request.user.email, html_message)
     except Exception as e:
@@ -167,7 +171,7 @@ def order_confirmation_view(request, order_id):
         id=order_id,
         user=request.user
     )
-    return render(request, 'order_confirmation.html', {'order': order})
+    return render(request, 'order_confirmation.html', {'order': order, 'shipping': Shipping.objects.first().get_amount() if Shipping.objects.first() else Decimal(100.00)})
 
 
 @login_required

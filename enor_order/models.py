@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from enor_store.models import ProductItem
 from enor_profile.models import UserAddress
-import uuid
+import uuid 
+
 
 # vouchers/models.py
 from django.db import models
@@ -103,6 +104,7 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=50, default='cod')
     instapay_payment_id = models.CharField(max_length=100, blank=True, null=True)
     reference_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    # shipping = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('100.00'))
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

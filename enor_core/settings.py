@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'enor_order',
     'enor_admin',
     'enor_content',
+    "enor_settings",
 
 ]
 

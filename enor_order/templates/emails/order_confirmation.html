@@ -58,7 +58,7 @@
                                         </span>
                                     </td>
                                     <td align="right" valign="middle">
-                                        <div style="font-size: 28px; font-weight: 800; color: #111827; line-height: 1;">${{ order.total }}</div>
+                                        <div style="font-size: 28px; font-weight: 800; color: #111827; line-height: 1;">EGP {{ order.total }}</div>
                                         <div style="font-size: 12px; color: #6b7280; margin-top: 6px;">
                                             Ref: <code style="background-color: #f3f4f6; padding: 3px 6px; border-radius: 4px; font-family: monospace;">{{ order.reference_number|slice:":8" }}</code>
                                         </div>
@@ -93,8 +93,8 @@
                                         </p>
                                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; margin-top: 10px;">
                                             <tr>
-                                                <td style="font-size: 14px; font-weight: 500; color: #4b5563;">${{ item.price }} × {{ item.quantity }}</td>
-                                                <td align="right" style="font-size: 15px; font-weight: 700; color: #111827;">${{ item.get_total }}</td>
+                                                <td style="font-size: 14px; font-weight: 500; color: #4b5563;">EGP {{ item.price }} × {{ item.quantity }}</td>
+                                                <td align="right" style="font-size: 15px; font-weight: 700; color: #111827;">EGP {{ item.get_total }} + EGP {{ shipping|floatformat:2 }} Shipping</td>
                                             </tr>
                                         </table>
                                     </td>
@@ -139,20 +139,24 @@
                                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 13px;">
                                                 <tr>
                                                     <td style="padding: 4px 0; color: #4b5563;">Subtotal</td>
-                                                    <td align="right" style="padding: 4px 0; color: #1f2937; font-weight: 500;">${{ order.subtotal }}</td>
+                                                    <td align="right" style="padding: 4px 0; color: #1f2937; font-weight: 500;">EGP {{ order.subtotal }}</td>
                                                 </tr>
                                                 {% if order.voucher %}
                                                 <tr>
                                                     <td style="padding: 4px 0; color: #059669;">Voucher ({{ order.voucher.code }})</td>
-                                                    <td align="right" style="padding: 4px 0; color: #059669; font-weight: 500;">−${{ order.discount }}</td>
+                                                    <td align="right" style="padding: 4px 0; color: #059669; font-weight: 500;">−EGP {{ order.discount }}</td>
                                                 </tr>
                                                 {% endif %}
+                                                <tr>
+                                                    <td style="padding: 4px 0; color: #059669;">Shipping</td>
+                                                    <td align="right" style="padding: 4px 0; color: #059669; font-weight: 500;">EGP {{ shipping|floatformat:2 }}</td>
+                                                </tr>
                                                 <tr>
                                                     <td colspan="2" style="border-top: 1px solid #e5e7eb; padding: 0; height: 1px;"></td>
                                                 </tr>
                                                 <tr>
                                                     <td style="padding: 12px 0 0; font-weight: 700; color: #111827; font-size: 15px;">Total</td>
-                                                    <td align="right" style="padding: 12px 0 0; font-weight: 800; color: #111827; font-size: 15px;">${{ order.total }}</td>
+                                                    <td align="right" style="padding: 12px 0 0; font-weight: 800; color: #111827; font-size: 15px;">EGP {{ order.total }} + EGP {{ shipping|floatformat:2 }}</td>
                                                 </tr>
                                             </table>
                                         </div>
