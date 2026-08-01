@@ -92,10 +92,10 @@
               </td>
               <td class="px-4 py-3 text-center text-sm font-medium">
                 {% if product.is_on_sale %}
-                  <span class="text-red-600">${{ product.base_price }}</span>
-                  <span class="text-gray-500 line-through text-xs">${{ product.before_price }}</span>
+                  <span class="text-red-600">EGP{{ product.base_price }}</span>
+                  <span class="text-gray-500 line-through text-xs">EGP{{ product.before_price }}</span>
                 {% else %}
-                  ${{ product.base_price }}
+                  EGP{{ product.base_price }}
                 {% endif %}
               </td>
               <td class="px-4 py-3 text-center">

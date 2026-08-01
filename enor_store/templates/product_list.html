@@ -109,10 +109,10 @@
             
             <div class="mt-2 flex items-center gap-2">
               {% if product.before_price and product.before_price > product.base_price %}
-                <span class="text-brand-red font-bold">${{ product.base_price }}</span>
-                <span class="text-gray-500 line-through text-sm">${{ product.before_price }}</span>
+                <span class="text-brand-red font-bold">EGP {{ product.base_price }}</span>
+                <span class="text-gray-500 line-through text-sm">EGP {{ product.before_price }}</span>
               {% else %}
-                <span class="font-bold text-brand-black">${{ product.base_price }}</span>
+                <span class="font-bold text-brand-black">EGP {{ product.base_price }}</span>
               {% endif %}
             </div>
             <div class="flex  items-center gap-2 absolute top-2 left-1">

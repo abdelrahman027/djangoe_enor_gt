@@ -67,10 +67,10 @@
               <div>
                 <h3 class="font-medium">{{ product.name }}</h3>
                 <div class="mt-1 flex items-center gap-2">
-                  <span class="text-sm ${% if product.is_available %}text-green-600{% else %}text-gray-400{% endif %}">
+                  <span class="text-sm {% if product.is_available %}text-green-600{% else %}text-gray-400{% endif %}">
                     {{ product.is_available|yesno:"Available,Unavailable" }}
                   </span>
-                  <span class="text-sm text-gray-500">${{ product.base_price }}</span>
+                  <span class="text-sm text-gray-500">EGP {{ product.base_price }}</span>
                 </div>
               </div>
             </div>

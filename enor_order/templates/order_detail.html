@@ -32,7 +32,7 @@
       </div>
     </div>
     <div class="text-right">
-      <div class="text-2xl font-bold text-brand-black">${{ order.total }}</div>
+      <div class="text-2xl font-bold text-brand-black">EGP {{ order.total }}</div>
       <div class="text-sm text-gray-500">
         Reference: <code class="bg-gray-100 px-1.5 py-0.5 rounded">{{ order.reference_number|slice:":8" }}</code>
       </div>
@@ -65,8 +65,8 @@
                     {% if item.product_item.style %} • {{ item.product_item.style.name }}{% endif %}
                   </p>
                   <div class="mt-2 flex items-center justify-between">
-                    <span class="text-sm font-medium">${{ item.price }} × {{ item.quantity }}</span>
-                    <span class="font-bold text-brand-black">${{ item.get_total }}</span>
+                    <span class="text-sm font-medium">EGP {{ item.price }} × {{ item.quantity }}</span>
+                    <span class="font-bold text-brand-black">EGP {{ item.get_total }}</span>
                   </div>
                 </div>
               </div>
@@ -115,17 +115,17 @@
         <div class="space-y-2 text-sm">
           <div class="flex justify-between">
             <span>Subtotal:</span>
-            <span>${{ order.subtotal }}</span>
+            <span>EGP {{ order.subtotal }}</span>
           </div>
           {% if order.voucher %}
             <div class="flex justify-between text-green-600">
               <span>Voucher ({{ order.voucher.code }}):</span>
-              <span>−${{ order.discount }}</span>
+              <span>−EGP {{ order.discount }}</span>
             </div>
           {% endif %}
           <div class="flex justify-between font-bold text-brand-black pt-2 border-t">
             <span>Total:</span>
-            <span>${{ order.total }}</span>
+            <span>EGP {{ order.total }}</span>
           </div>
         </div>
       </div>

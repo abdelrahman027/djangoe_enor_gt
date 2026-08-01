@@ -58,10 +58,10 @@
       
       <div class="mt-2 flex items-center gap-3">
         {% if product.before_price and product.before_price > product.base_price %}
-          <span class="text-2xl font-bold text-brand-red">${{ product.base_price }}</span>
-          <span class="text-gray-500 line-through text-lg">${{ product.before_price }}</span>
+          <span class="text-2xl font-bold text-brand-red">EGP {{ product.base_price }}</span>
+          <span class="text-gray-500 line-through text-lg">EGP {{ product.before_price }}</span>
         {% else %}
-          <span class="text-2xl font-bold text-brand-black">${{ product.base_price }}</span>
+          <span class="text-2xl font-bold text-brand-black">EGP {{ product.base_price }}</span>
         {% endif %}
       </div>
 
@@ -91,7 +91,7 @@
                       {% if item.style %} • {{ item.style.name }}{% endif %}
                     </span>
                     <span class="font-medium whitespace-nowrap">
-                      ${{ item.price }} 
+                      EGP {{ item.price }} 
                       {% if not item.is_in_stock %}— Out of Stock{% endif %}
                     </span>
                   </a>
@@ -109,7 +109,7 @@
                   {% if item.style %}Style: {{ item.style.name }}{% endif %}
                 </p>
                 <p class="mt-1">
-                  <span class="font-bold">${{ item.price }}</span>
+                  <span class="font-bold">EGP {{ item.price }}</span>
                   {% if item.is_in_stock %}
                     <span class="ml-3 text-green-600">✓ In stock ({{ item.stock_quantity }})</span>
                   {% else %}

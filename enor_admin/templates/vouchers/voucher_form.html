@@ -44,7 +44,7 @@
                  {% if voucher and voucher.discount_type == 'fixed' %}checked{% endif %}>
           <div class="ml-3">
             <div class="font-medium">Fixed Amount</div>
-            <div class="text-sm text-gray-500">e.g., $20 off</div>
+            <div class="text-sm text-gray-500">e.g., EGP 20 off</div>
           </div>
         </label>
       </div>
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (type === 'percent') {
       label.textContent = 'Discount (%) *';
     } else {
-      label.textContent = 'Discount Amount ($) *';
+      label.textContent = 'Discount Amount (EGP) *';
     }
   }
 

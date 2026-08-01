@@ -70,10 +70,10 @@
                 {% if voucher.discount_type == 'percent' %}
                   <span class="font-bold text-green-600">{{ voucher.discount_value }}%</span> off
                 {% else %}
-                  <span class="font-bold text-green-600">${{ voucher.discount_value }}</span> off
+                  <span class="font-bold text-green-600">EGP {{ voucher.discount_value }}</span> off
                 {% endif %}
                 {% if voucher.min_order_amount > 0 %}
-                  <div class="text-xs text-gray-500 mt-1">Min: ${{ voucher.min_order_amount }}</div>
+                  <div class="text-xs text-gray-500 mt-1">Min: EGP {{ voucher.min_order_amount }}</div>
                 {% endif %}
               </td>
               <td class="px-4 py-3 text-center text-sm">

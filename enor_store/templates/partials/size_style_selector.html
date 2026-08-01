@@ -15,7 +15,7 @@
               {% if item.size %} / {{ item.size.name }}{% endif %}
               {% if item.style %} / {{ item.style.name }}{% endif %}
             </span>
-            <span class="font-medium">${{ item.price }}</span>
+            <span class="font-medium">EGP {{ item.price }}</span>
           </button>
         {% endfor %}
       </div>
@@ -23,7 +23,7 @@
   {% elif items|length == 1 %}
     {% with item=items.0 %}
       <div class="text-gray-600">
-        <span>Price: <strong>${{ item.price }}</strong></span>
+        <span>Price: <strong>EGP {{ item.price }}</strong></span>
         <span class="ml-4">Stock: 
           {% if item.is_in_stock %}
             <span class="text-green-600">{{ item.stock_quantity }} in stock</span>

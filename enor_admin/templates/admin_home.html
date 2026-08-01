@@ -77,7 +77,7 @@
             </span>
           </div>
           <p class="text-sm text-gray-500 mt-1">{{ order.user.username }}</p>
-          <p class="text-sm font-medium mt-1">${{ order.total }}</p>
+          <p class="text-sm font-medium mt-1">EGP {{ order.total }}</p>
         </div>
       {% empty %}
         <div class="p-4 text-center text-gray-500">No orders yet</div>
@@ -96,7 +96,7 @@
             <span class="text-xs px-2 py-1 bg-gray-100 rounded mr-2">
               {{ product.category.category_name }}
             </span>
-            <span class="text-sm text-gray-500">${{ product.base_price }}</span>
+            <span class="text-sm text-gray-500">EGP {{ product.base_price }}</span>
           </div>
         </div>
       {% empty %}

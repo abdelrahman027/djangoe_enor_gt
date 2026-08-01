@@ -170,7 +170,7 @@
                 <span>{{ product.name|truncatechars:25 }}
                   <span class="text-gray-500">×{{ item.quantity }}</span>
                 </span>
-                <span>${{ item.get_total_price|floatformat:2 }}</span>
+                <span>EGP {{ item.get_total_price|floatformat:2 }}</span>
               </div>
             {% endwith %}
           {% endfor %}
@@ -180,7 +180,7 @@
                   <span class="text-gray-500">Voucher applied</span>
                 </span>
                 {% if cart.voucher.discount_type == 'fixed'  %}
-                <span>${{ cart.voucher.discount_value|floatformat:2 }}</span>
+                <span>EGP {{ cart.voucher.discount_value|floatformat:2 }}</span>
                 {% else %}
                 <span>%{{ cart.voucher.discount_value|floatformat:2 }}</span>
 
@@ -189,12 +189,12 @@
             {% endif %}
             <div class="flex justify-between">
                 <span>Shipping</span>
-                <span>${{ shipping|floatformat:2 }}</span>
+                <span>EGP {{ shipping|floatformat:2 }}</span>
               </div>
           <div class="border-t pt-2 mt-2">
             <div class="flex justify-between font-medium">
               <span>Total:</span>
-              <span>${{ total|floatformat:2 }}</span>
+              <span>EGP {{ total|floatformat:2 }}</span>
             </div>
           </div>
         </div>
